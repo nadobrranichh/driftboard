@@ -4,6 +4,7 @@ import AuthPage from "../pages/AuthPage";
 import App from "../App";
 import HomePage from "../pages/HomePage";
 import BoardPage from "../pages/BoardPage";
+import TaskDetail from "../components/TaskDetail";
 
 const router = createBrowserRouter([
   {
@@ -15,6 +16,7 @@ const router = createBrowserRouter([
       {
         path: "board/:boardId",
         element: <BoardPage />,
+        children: [{ path: "task/:taskId", element: <TaskDetail /> }],
       },
     ],
   },

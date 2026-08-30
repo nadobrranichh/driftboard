@@ -1,6 +1,7 @@
 import { Check, Circle, X } from "lucide-react";
 import { useState, type MouseEvent } from "react";
 import NewTaskForm from "../components/NewTaskForm";
+import { Outlet } from "react-router";
 
 const columns = ["To do", "In Progress", "Done"];
 
@@ -37,6 +38,7 @@ export default function BoardPage() {
       {isNewTaskFormOpen && (
         <NewTaskForm onClose={() => setIsNewTaskFormOpen(false)} />
       )}
+      <Outlet />
       <p className="font-bold text-xl mb-2">Columns</p>
       <div className="flex gap-2 mb-4 flex-wrap">
         {columns.map((col, i) => (
