@@ -3,6 +3,7 @@ import RootLayout from "../pages/RootLayout";
 import AuthPage from "../pages/AuthPage";
 import App from "../App";
 import HomePage from "../pages/HomePage";
+import BoardPage from "../pages/BoardPage";
 
 const router = createBrowserRouter([
   {
@@ -11,6 +12,10 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <App /> },
       { path: "home", element: <HomePage /> },
+      {
+        path: "board/:boardId",
+        element: <BoardPage />,
+      },
     ],
   },
   {
