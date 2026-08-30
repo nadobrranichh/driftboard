@@ -2,14 +2,15 @@ import { Plus } from "lucide-react";
 import InputGroup from "./InputGroup";
 import NewBoardColumnItem from "./NewBoardColumnItem";
 import { boardColorRamps, boardIconsList } from "../lists/boardIconsList";
+import Backdrop from "./Backdrop";
 
 export default function NewBoardForm({ onClose }: { onClose: () => void }) {
   return (
-    <div
-      onClick={onClose}
-      className="absolute h-full w-full top-0 left-0 flex justify-center items-center bg-text/20"
-    >
-      <form className="bg-surface rounded-xl border border-border w-80 p-4 flex flex-col gap-4">
+    <Backdrop onClick={onClose}>
+      <form
+        onClick={(e) => e.stopPropagation()}
+        className="bg-surface rounded-xl border border-border w-80 p-4 flex flex-col gap-4"
+      >
         <h2 className="text-center font-bold text-2xl">New Board</h2>
         <InputGroup name="board-name" textSize="base" />
         <div>
@@ -44,6 +45,6 @@ export default function NewBoardForm({ onClose }: { onClose: () => void }) {
           Create Board
         </button>
       </form>
-    </div>
+    </Backdrop>
   );
 }
