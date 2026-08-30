@@ -5,6 +5,7 @@ import App from "../App";
 import HomePage from "../pages/HomePage";
 import BoardPage from "../pages/BoardPage";
 import TaskDetail from "../components/TaskDetail";
+import NotFoundPage from "../pages/NotFoundPage";
 
 const router = createBrowserRouter([
   {
@@ -24,6 +25,7 @@ const router = createBrowserRouter([
     path: "/auth",
     element: <AuthPage />,
   },
+  { path: "*", element: <NotFoundPage /> },
 ]);
 
 export default router;
