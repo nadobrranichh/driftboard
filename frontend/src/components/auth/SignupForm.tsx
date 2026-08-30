@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import InputGroup from "../InputGroup";
 import AuthLayout from "./AuthLayout";
+import Button from "../Button";
 
 export default function SignupForm() {
   return (
@@ -11,10 +12,7 @@ export default function SignupForm() {
         <InputGroup name="password" />
         <InputGroup name="repeat-password" />
       </div>
-
-      <button className="bg-primary text-surface rounded-md px-2 py-2">
-        Sign up
-      </button>
+      <Button>Sign up</Button>
 
       <p className="text-center ">
         Already have an account?{" "}

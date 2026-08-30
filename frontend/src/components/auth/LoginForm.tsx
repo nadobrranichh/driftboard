@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import InputGroup from "../InputGroup";
 import AuthLayout from "./AuthLayout";
+import Button from "../Button";
 
 export default function LoginForm() {
   return (
@@ -18,9 +19,7 @@ export default function LoginForm() {
         </div>
       </div>
 
-      <button className="bg-primary text-surface rounded-md px-2 py-2">
-        Log in
-      </button>
+      <Button>Log in</Button>
       <p className="text-center ">
         No account?{" "}
         <Link to="?mode=signup" className="underline">
