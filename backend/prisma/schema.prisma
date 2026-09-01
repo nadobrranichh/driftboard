@@ -11,3 +11,63 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model User {
+  id Int @id @default(autoincrement())
+  email String @unique
+  name String
+  passwordHash String
+
+  boards BoardMember[] // back-relation to BoardMember 
+  tasks Task[] // back-relation to Task
+}
+
+model Board {
+  id Int @id @default(autoincrement())
+  title String
+  icon String 
+  iconColor String
+  
+  members BoardMember[] // back-relation to BoardMember
+  columns Column[] // back-relation to Column
+}
+
+model BoardMember {
+  id Int @id @default(autoincrement())  
+
+  boardId Int
+  userId Int
+
+  // relations: foreign keys
+  board Board @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  member User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // composite unique constraint 
+  // (to not add a user to the same board twice)
+  @@unique([boardId, userId])
+}
+
+model Column {
+  id Int @id @default(autoincrement())
+  title String
+  position Int
+
+  boardId Int
+
+  board Board @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  tasks Task[] // back-relation to Task
+}
+
+model Task {
+  id Int @id @default(autoincrement())
+  title String 
+  description String
+  dueDate DateTime?
+  position Int
+
+  assigneeId Int?
+  columnId Int
+
+  column Column @relation(fields: [columnId], references: [id], onDelete: Cascade)
+  assignee User? @relation(fields: [assigneeId], references: [id], onDelete: SetNull)
+}
