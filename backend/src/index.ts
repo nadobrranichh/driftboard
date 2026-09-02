@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import authRouter from "./routes/auth.routes.js";
+import boardsRouter from "./routes/board.routes.js";
 
 dotenv.config();
 
@@ -14,6 +15,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/auth", authRouter);
+app.use("/boards", boardsRouter);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
