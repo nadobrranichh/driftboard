@@ -1,15 +1,6 @@
 import type { Request, Response } from "express";
 import prisma from "../config/db.js";
-
-async function checkIfIsMember(
-  boardId: number,
-  userId: number,
-): Promise<boolean> {
-  const boardMember = await prisma.boardMember.findFirst({
-    where: { boardId, userId },
-  });
-  return !!boardMember;
-}
+import { checkIfIsMember } from "../util/boardMembership.js";
 
 export async function getBoards(req: Request, res: Response) {
   if (!req.user) return res.status(401).json({ error: "Not authenticated" });
