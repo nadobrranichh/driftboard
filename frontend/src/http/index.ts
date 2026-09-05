@@ -1,50 +1,19 @@
 import { QueryClient } from "@tanstack/react-query";
 export const queryClient = new QueryClient();
 
-export async function login(data: { email: string; password: string }) {
-  const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-    credentials: "include",
-    mode: "cors",
-  });
+export async function sendRequest(endpoint: string, init?: RequestInit) {
+  const res = await fetch(
+    `${import.meta.env.VITE_BACKEND_URL}${endpoint}`,
+    init,
+  );
   const resData = await res.json();
-  if (resData.error) throw resData;
   return resData;
 }
 
-export async function signup(data: {
-  name: string;
-  email: string;
-  password: string;
-}) {
-  const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/signup`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-    credentials: "include",
-    mode: "cors",
-  });
-  const resData = await res.json();
-  if (resData.error) throw resData;
-  return resData;
-}
-
-export async function createBoard(data: {
-  title: string;
-  columns: string[];
-  icon: string;
-  iconColor: string;
-}) {
-  const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/boards`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-    credentials: "include",
-    mode: "cors",
-  });
-  const resData = await res.json();
-  if (resData.error) throw resData;
-  return resData;
-}
+export const requestInit = (method: string, data: any): RequestInit => ({
+  method: method,
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(data),
+  credentials: "include",
+  mode: "cors",
+});

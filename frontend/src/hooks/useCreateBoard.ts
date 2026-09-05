@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
-import { createBoard } from "../http";
+import { createBoard } from "../http/boards";
 
 export default function useCreateBoard() {
   const navigate = useNavigate();
