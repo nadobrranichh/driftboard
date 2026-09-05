@@ -30,3 +30,21 @@ export async function signup(data: {
   if (resData.error) throw resData;
   return resData;
 }
+
+export async function createBoard(data: {
+  title: string;
+  columns: string[];
+  icon: string;
+  iconColor: string;
+}) {
+  const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/boards`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+    credentials: "include",
+    mode: "cors",
+  });
+  const resData = await res.json();
+  if (resData.error) throw resData;
+  return resData;
+}
