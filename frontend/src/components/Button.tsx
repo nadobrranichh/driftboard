@@ -1,19 +1,19 @@
-import { type ReactNode } from "react";
+import { type ButtonHTMLAttributes, type ReactNode } from "react";
+
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  outlined?: boolean;
+  children: ReactNode;
+}
 
 export default function Button({
   outlined = false,
   className = "",
   children,
   ...props
-}: {
-  outlined?: boolean;
-  className?: string;
-  children: ReactNode;
-}) {
+}: ButtonProps) {
   const baseClasses =
-    "rounded-lg px-5 py-3 text-md font-medium transition-colors cursor-pointer";
+    "rounded-lg text-md font-medium transition-colors cursor-pointer";
   const filledClasses = "bg-primary text-surface hover:bg-primary-dark";
-
   const outlinedClasses =
     "bg-surface border border-border text-text hover: bg-bg";
   return (
