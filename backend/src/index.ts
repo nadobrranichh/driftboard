@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
 import authRouter from "./routes/auth.routes.js";
 import boardsRouter from "./routes/board.routes.js";
 import columnsRouter from "./routes/column.routes.js";
@@ -15,6 +16,7 @@ app.use(
     credentials: true,
   }),
 );
+app.use(cookieParser());
 app.use(express.json());
 
 app.get("/", (req, res) => {

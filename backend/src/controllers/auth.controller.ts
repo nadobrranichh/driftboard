@@ -12,7 +12,6 @@ const COOKIE_MAX_AGE = 24 * 60 * 60 * 1000; // 1 day
 function setAuthCookie(res: Response, token: String) {
   res.cookie("token", token, {
     httpOnly: true,
-    sameSite: "strict",
     maxAge: COOKIE_MAX_AGE,
   });
 }
