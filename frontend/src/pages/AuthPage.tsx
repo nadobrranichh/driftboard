@@ -4,7 +4,7 @@ import SignupForm from "../components/auth/SignupForm";
 import { useEffect, useState, type SyntheticEvent } from "react";
 import useLogin from "../hooks/useLogin";
 import useSignup from "../hooks/useSignup";
-import { validateAuthFields } from "../utils/validateAuthFields";
+import { validateAuthFields } from "../utils/formFieldValidation";
 
 export default function AuthPage() {
   const [params] = useSearchParams();
