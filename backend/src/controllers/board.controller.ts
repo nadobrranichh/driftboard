@@ -10,9 +10,20 @@ export async function getBoards(req: Request, res: Response) {
     where: {
       members: { some: { userId } },
     },
+    include: { columns: { select: { _count: { select: { tasks: true } } } } },
   });
 
-  return res.json({ boards });
+  const boardsTransformed = boards.map((board) => {
+    const newBoard: any = { ...board };
+    newBoard.taskCount = board.columns.reduce(
+      (acc, col) => acc + col._count.tasks,
+      0,
+    );
+    delete newBoard.columns;
+    return newBoard;
+  });
+
+  return res.json({ boards: boardsTransformed });
 }
 
 export async function getBoard(req: Request, res: Response) {
