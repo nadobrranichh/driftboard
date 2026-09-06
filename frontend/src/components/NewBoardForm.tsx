@@ -1,17 +1,18 @@
 import { Plus } from "lucide-react";
 import InputGroup from "./InputGroup";
 import NewBoardColumnItem from "./NewBoardColumnItem";
-import { boardColorRamps, boardIconsList } from "../lists/boardIconsList";
 import Backdrop from "./Backdrop";
 import { useState, type SyntheticEvent } from "react";
 import Button from "./Button";
 import useCreateBoard from "../hooks/useCreateBoard";
+import { boardColorRamps, boardIcons } from "../lists/boardIconsList";
 
 const MAX_COLUMNS = 5;
 
 export default function NewBoardForm({ onClose }: { onClose: () => void }) {
   const createBoard = useCreateBoard();
-  const [selectedIconIndex, setSelectedIconIndex] = useState(-1);
+  const [selectedIcon, setSelectedIcon] = useState("");
+  const [selectedColor, setSelectedColor] = useState("");
   const [inputErrors, setInputErrors] = useState<string[]>([]);
   const [columns, setColumns] = useState<string[]>([
     "To do",
@@ -48,7 +49,8 @@ export default function NewBoardForm({ onClose }: { onClose: () => void }) {
     if (!boardName || boardName.trim().length < 1)
       errors.push("Board name is not provided");
     if (columns.length < 1) errors.push("There must be at least one column");
-    if (selectedIconIndex === -1) errors.push("Board icon isn't selected");
+    if (selectedIcon === "") errors.push("Board icon isn't selected");
+    if (selectedColor === "") errors.push("Icon color isn't selected");
 
     if (errors.length > 0) {
       setInputErrors(errors);
@@ -59,8 +61,8 @@ export default function NewBoardForm({ onClose }: { onClose: () => void }) {
     createBoard.mutate({
       title: boardName,
       columns,
-      icon: boardIconsList[selectedIconIndex].icon.displayName || "",
-      iconColor: boardIconsList[selectedIconIndex].color,
+      icon: selectedIcon,
+      iconColor: selectedColor,
     });
   }
 
@@ -83,7 +85,7 @@ export default function NewBoardForm({ onClose }: { onClose: () => void }) {
           <div className="bg-bg border border-text p-2 flex flex-col gap-2 rounded-md">
             {columns.map((col, i) => (
               <NewBoardColumnItem
-                key={col}
+                key={i}
                 name={col}
                 changeColumnName={changeColumnName.bind(null, i)}
                 deleteColumn={deleteColumn.bind(null, i)}
@@ -92,17 +94,27 @@ export default function NewBoardForm({ onClose }: { onClose: () => void }) {
           </div>
         </div>
         <div>
-          <p>Icon</p>
-          <div className="flex justify-between">
-            {boardIconsList.map((icon, index) => (
+          <p>Icon & Color</p>
+          <div className="flex justify-between mb-2">
+            {Object.entries(boardIcons).map(([name, Icon]) => (
               <div
-                key={index}
-                className={`p-2 rounded-md border border-border ${selectedIconIndex === index && "border-text"}`}
-                style={{ backgroundColor: boardColorRamps[icon.color].bg }}
-                onClick={() => setSelectedIconIndex(index)}
+                key={name}
+                onClick={() => setSelectedIcon(name)}
+                className={`p-2 rounded-md border border-border ${selectedIcon === name && "border-text"}`}
               >
-                <icon.icon style={{ color: boardColorRamps[icon.color].fg }} />
+                <Icon />
               </div>
+            ))}
+          </div>
+
+          <div className="flex justify-between">
+            {Object.entries(boardColorRamps).map(([name, colors]) => (
+              <div
+                key={name}
+                onClick={() => setSelectedColor(name)}
+                className={`h-10.5 w-10.5 rounded-md border border-border ${selectedColor === name && "border-text"}`}
+                style={{ backgroundColor: colors.bg }}
+              ></div>
             ))}
           </div>
         </div>
