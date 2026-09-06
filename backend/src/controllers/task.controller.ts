@@ -56,13 +56,12 @@ export async function addTask(req: Request, res: Response) {
   });
 
   const position = lastTask ? lastTask.position + 1 : 1;
-
   try {
     const task = await prisma.task.create({
       data: {
         title,
         description,
-        dueDate: new Date(dueDate),
+        ...(dueDate && { dueDate: new Date(dueDate) }),
         position,
         assigneeId,
         columnId,
