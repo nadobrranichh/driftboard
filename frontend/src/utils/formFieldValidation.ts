@@ -25,3 +25,25 @@ export function validateAuthFields(
 
   return { fields: { name, email, password }, errors };
 }
+
+export function validateNewTaskFields(e: SyntheticEvent<HTMLFormElement>) {
+  const data = Object.fromEntries(new FormData(e.currentTarget));
+
+  const title = String(data.title);
+  const description = String(data.description);
+  const dueDate = String(data["due-date"]);
+
+  const errors = [];
+
+  if (!title || title.trim().length < 1) errors.push("Title is required");
+
+  if (dueDate) {
+    const dateObj = new Date(dueDate);
+    const checkObj = new Date();
+    checkObj.setHours(0, 0, 0, 0);
+    if (dateObj < checkObj) errors.push("Due date cannot be in the past");
+    checkObj.setFullYear(checkObj.getFullYear() + 1);
+    if (dateObj > checkObj) errors.push("Due date too far in the future");
+  }
+  return { fields: { title, description, dueDate }, errors };
+}
