@@ -1,11 +1,12 @@
-import { Check, Circle, X } from "lucide-react";
-import { useEffect, useState, type MouseEvent } from "react";
+import { Check, X } from "lucide-react";
+import { useState, type MouseEvent } from "react";
 import NewTaskForm from "../components/NewTaskForm";
 import { Outlet, useLocation, useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { getBoard } from "../http/boards";
 import type { ColumnType, TaskType } from "../types";
-import { formatDate } from "../utils/strings";
+import Task from "../components/Task";
+import ColumnPill from "../components/ColumnPill";
 
 export default function BoardPage() {
   const [isNewTaskFormOpen, setIsNewTaskFormOpen] = useState(false);
@@ -44,22 +45,13 @@ export default function BoardPage() {
       <p className="font-bold text-xl mb-2">Columns</p>
       <div className="flex gap-2 mb-4 flex-wrap">
         {board &&
-          board.columns.map((col: ColumnType, i: number) => (
-            <div
-              key={i}
-              className="rounded-3xl border border-border bg-surface py-2 px-4"
-              style={{
-                backgroundColor:
-                  activeColumnId === col.id
-                    ? "var(--color-primary)"
-                    : "var(--color-surface)",
-                color:
-                  activeColumnId === col.id ? "var(--color-surface)" : "black",
-              }}
-              onClick={() => setActiveColumnId(col.id)}
-            >
-              {col.title} &bull; {col.tasks!.length}
-            </div>
+          board.columns.map((col: ColumnType) => (
+            <ColumnPill
+              key={col.id}
+              data={col}
+              handleClick={() => setActiveColumnId(col.id)}
+              activeColumnId={activeColumnId}
+            />
           ))}
         <div
           onClick={() => setIsAddingNewColumn(true)}
@@ -93,23 +85,8 @@ export default function BoardPage() {
             Tasks in {activeColumn.title} column
           </p>
           <div className="flex flex-col gap-2">
-            {activeColumn.tasks.map((task: TaskType, i: number) => (
-              <div
-                key={i}
-                className="bg-surface rounded-xl border border-border p-3"
-              >
-                <p className="font-semibold text-lg">{task.title}</p>
-                <div className="flex justify-between items-end">
-                  <p className="text-text-muted">
-                    {task.dueDate
-                      ? `Due ${formatDate(new Date(task.dueDate))}`
-                      : "No deadline set"}
-                  </p>
-                  <div>
-                    <Circle size={20} />
-                  </div>
-                </div>
-              </div>
+            {activeColumn.tasks.map((task: TaskType) => (
+              <Task key={task.id} data={task} />
             ))}
             <div
               className="border border-border p-5 rounded-xl"
