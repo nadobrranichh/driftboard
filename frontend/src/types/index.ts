@@ -1,9 +1,9 @@
-import * as Icons from "lucide-react";
+import type { boardIcons } from "../lists/boardIconsList";
 
 export type BoardType = {
   id: number;
   title: string;
-  icon: keyof typeof Icons;
+  icon: keyof typeof boardIcons;
   iconColor: string;
   taskCount?: number;
 };
