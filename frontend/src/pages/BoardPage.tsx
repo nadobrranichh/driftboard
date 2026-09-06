@@ -1,5 +1,5 @@
 import { Check, X } from "lucide-react";
-import { useState, type MouseEvent } from "react";
+import { useRef, useState, type MouseEvent } from "react";
 import NewTaskForm from "../components/NewTaskForm";
 import { Outlet, useLocation, useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
@@ -7,10 +7,12 @@ import { getBoard } from "../http/boards";
 import type { ColumnType, TaskType } from "../types";
 import Task from "../components/Task";
 import ColumnPill from "../components/ColumnPill";
+import useCreateColumn from "../hooks/useCreateColumn";
 
 export default function BoardPage() {
   const [isNewTaskFormOpen, setIsNewTaskFormOpen] = useState(false);
   const [isAddingNewColumn, setIsAddingNewColumn] = useState(false);
+  const newColumnRef = useRef<HTMLInputElement>(null);
   const { boardId } = useParams();
   const location = useLocation();
   const boardQuery = useQuery({
@@ -18,6 +20,7 @@ export default function BoardPage() {
     queryFn: () => getBoard(Number(boardId)),
     initialData: location.state || null,
   });
+  const createColumn = useCreateColumn(Number(boardId));
   const board = boardQuery.data ? boardQuery.data.board : null;
   const [activeColumnId, setActiveColumnId] = useState(-1);
   const activeColumn = board
@@ -26,6 +29,11 @@ export default function BoardPage() {
 
   function handleAddColumn(e: MouseEvent<HTMLButtonElement>) {
     e.stopPropagation();
+    if (!newColumnRef.current) return;
+    const title = newColumnRef.current.value;
+    if (!title || title.trim().length === 0) return;
+    createColumn.mutate({ title, boardId: Number(boardId) });
+    newColumnRef.current.value = "";
     setIsAddingNewColumn(false);
   }
 
@@ -60,10 +68,13 @@ export default function BoardPage() {
           {isAddingNewColumn ? (
             <>
               <input
-                name="new-column"
-                className="border border-border rounded-lg px-2 w-35"
+                ref={newColumnRef}
+                className="border border-border rounded-xl px-3 w-33"
               />
-              <button className="cursor-pointer" onClick={handleAddColumn}>
+              <button
+                className="cursor-pointer"
+                onClick={(e) => handleAddColumn(e)}
+              >
                 <Check />
               </button>{" "}
               <button
