@@ -8,7 +8,7 @@ export default function useCreateBoard() {
   return useMutation({
     mutationFn: createBoard,
     onSuccess: (data) => {
-      navigate(`/board/${data.board.id}`);
+      navigate(`/board/${data.board.id}`, { state: data });
     },
     onError: (err) => console.error(err),
   });

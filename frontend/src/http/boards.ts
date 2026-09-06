@@ -16,3 +16,9 @@ export async function getBoards() {
   if (data.error) throw data;
   return data;
 }
+
+export async function getBoard(id: number) {
+  const data = await sendRequest(`/boards/${id}`, { credentials: "include" });
+  if (data.error) throw data;
+  return data;
+}
