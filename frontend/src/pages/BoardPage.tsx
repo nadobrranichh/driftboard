@@ -2,12 +2,11 @@ import { Check, X } from "lucide-react";
 import { useRef, useState, type MouseEvent } from "react";
 import NewTaskForm from "../components/NewTaskForm";
 import { Outlet, useLocation, useParams } from "react-router";
-import { useQuery } from "@tanstack/react-query";
-import { getBoard } from "../http/boards";
 import type { ColumnType, TaskType } from "../types";
 import Task from "../components/Task";
 import ColumnPill from "../components/ColumnPill";
 import useCreateColumn from "../hooks/useCreateColumn";
+import useGetBoard from "../hooks/useGetBoard";
 
 export default function BoardPage() {
   const [isNewTaskFormOpen, setIsNewTaskFormOpen] = useState(false);
@@ -15,11 +14,7 @@ export default function BoardPage() {
   const newColumnRef = useRef<HTMLInputElement>(null);
   const { boardId } = useParams();
   const location = useLocation();
-  const boardQuery = useQuery({
-    queryKey: ["boards", Number(boardId)],
-    queryFn: () => getBoard(Number(boardId)),
-    initialData: location.state || null,
-  });
+  const boardQuery = useGetBoard(Number(boardId), location.state);
   const createColumn = useCreateColumn(Number(boardId));
   const board = boardQuery.data ? boardQuery.data.board : null;
   const [activeColumnId, setActiveColumnId] = useState(-1);
@@ -97,7 +92,7 @@ export default function BoardPage() {
           </p>
           <div className="flex flex-col gap-2">
             {activeColumn.tasks.map((task: TaskType) => (
-              <Task key={task.id} data={task} />
+              <Task key={task.id} data={{ ...task, column: activeColumn }} />
             ))}
             <div
               className="border border-border p-5 rounded-xl"
