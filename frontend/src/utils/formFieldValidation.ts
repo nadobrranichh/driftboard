@@ -1,4 +1,15 @@
 import type { SyntheticEvent } from "react";
+import type { TaskType } from "../types";
+
+function checkDueDate(dueDate: string) {
+  const dateObj = new Date(dueDate);
+  const checkObj = new Date();
+  checkObj.setHours(0, 0, 0, 0);
+  if (dateObj < checkObj) return "Due date cannot be in the past";
+  checkObj.setFullYear(checkObj.getFullYear() + 1);
+  if (dateObj > checkObj) return "Due date too far in the future";
+  return null;
+}
 
 export function validateAuthFields(
   e: SyntheticEvent<HTMLFormElement>,
@@ -38,12 +49,26 @@ export function validateNewTaskFields(e: SyntheticEvent<HTMLFormElement>) {
   if (!title || title.trim().length < 1) errors.push("Title is required");
 
   if (dueDate) {
-    const dateObj = new Date(dueDate);
-    const checkObj = new Date();
-    checkObj.setHours(0, 0, 0, 0);
-    if (dateObj < checkObj) errors.push("Due date cannot be in the past");
-    checkObj.setFullYear(checkObj.getFullYear() + 1);
-    if (dateObj > checkObj) errors.push("Due date too far in the future");
+    const dateError = checkDueDate(dueDate);
+    if (dateError) errors.push(dateError);
   }
   return { fields: { title, description, dueDate }, errors };
+}
+
+export function validateEditTaskFields(fieldsData: TaskType) {
+  const { title, assigneeId, dueDate, description, columnId } = fieldsData;
+
+  const errors = [];
+
+  if (!title || title.trim().length < 1) errors.push("Title is required");
+
+  if (dueDate) {
+    const dateError = checkDueDate(dueDate);
+    if (dateError) errors.push(dateError);
+  }
+
+  return {
+    fields: { title, dueDate, assigneeId, description, columnId },
+    errors,
+  };
 }
