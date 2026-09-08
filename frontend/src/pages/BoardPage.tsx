@@ -7,6 +7,7 @@ import Task from "../components/Task";
 import ColumnPill from "../components/ColumnPill";
 import useCreateColumn from "../hooks/useCreateColumn";
 import useGetBoard from "../hooks/useGetBoard";
+import { boardColorRamps, boardIcons } from "../lists/boardIconsList";
 
 export default function BoardPage() {
   const [isNewTaskFormOpen, setIsNewTaskFormOpen] = useState(false);
@@ -20,6 +21,11 @@ export default function BoardPage() {
   const [activeColumnId, setActiveColumnId] = useState(-1);
   const activeColumn = board
     ? board.columns.find((col: ColumnType) => col.id === activeColumnId)
+    : null;
+
+  const Icon = board ? boardIcons[board.icon] : null;
+  const colors = board
+    ? boardColorRamps[board.iconColor as keyof typeof boardColorRamps]
     : null;
 
   function handleAddColumn(e: MouseEvent<HTMLButtonElement>) {
@@ -36,6 +42,9 @@ export default function BoardPage() {
     e.stopPropagation();
     setIsAddingNewColumn(false);
   }
+
+  if (!board || !colors || !Icon) return <p>Loading...</p>;
+
   return (
     <main className="flex flex-col">
       {isNewTaskFormOpen && (
@@ -45,6 +54,16 @@ export default function BoardPage() {
         />
       )}
       <Outlet />
+      <div className="flex flex-col justify-center items-center gap-1 -mt-3">
+        <div
+          className={`h-full p-1.5 rounded-lg`}
+          style={{ backgroundColor: colors.bg }}
+        >
+          <Icon style={{ height: "1.5rem" }} color={colors.fg} />
+        </div>
+
+        <h2 className="font-bold text-xl mb-2">{board.title}</h2>
+      </div>
       <p className="font-bold text-xl mb-2">Columns</p>
       <div className="flex gap-2 mb-4 flex-wrap">
         {board &&
@@ -88,7 +107,7 @@ export default function BoardPage() {
       {activeColumn ? (
         <>
           <p className="font-bold text-xl mb-2">
-            Tasks in {activeColumn.title} column
+            Tasks in {activeColumn.title} column:
           </p>
           <div className="flex flex-col gap-2">
             {activeColumn.tasks.map((task: TaskType) => (
