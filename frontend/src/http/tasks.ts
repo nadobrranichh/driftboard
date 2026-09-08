@@ -1,15 +1,27 @@
 import { requestInit, sendRequest } from ".";
+import type { TaskType } from "../types";
 
-export async function createTask(task: {
-  title: string;
-  description: string;
-  dueDate: string;
-  columnId: number;
-}) {
+export async function createTask(task: TaskType) {
   const data = await sendRequest(
     "/tasks",
     requestInit("POST", { ...task, position: 0, assigneeId: null }),
   );
   if (data.error) throw data;
   return data;
+}
+
+export async function updateTask({
+  id,
+  newFields,
+}: {
+  id: number;
+  newFields: Partial<TaskType>;
+}) {
+  const updatedTask = await sendRequest(
+    `/tasks/${id}`,
+    requestInit("PATCH", newFields),
+  );
+  console.log("UPDATED TASK:", updatedTask);
+  if (updatedTask.error) throw updatedTask;
+  return updatedTask;
 }

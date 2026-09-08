@@ -1,13 +1,21 @@
 import type { boardIcons } from "../lists/boardIconsList";
 
+export type User = {
+  id: number;
+  name: string;
+  email: string;
+  password?: string;
+};
+
 export type TaskType = {
   id: number;
   title: string;
   description: string;
   dueDate: string;
   position: number;
-  assigneeId?: number;
+  assigneeId?: number | null;
   columnId: number;
+  column?: ColumnType;
 };
 
 export type ColumnType = {
