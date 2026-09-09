@@ -65,3 +65,8 @@ export async function signup(req: Request, res: Response) {
     user: { id: user.id, name: user.name, email: user.email },
   });
 }
+
+export async function me(req: Request, res: Response) {
+  if (!req.user) return res.status(401).json({ error: "Not authenticated" });
+  return res.json({ user: req.user });
+}
