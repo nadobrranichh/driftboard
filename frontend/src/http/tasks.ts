@@ -21,7 +21,6 @@ export async function updateTask({
     `/tasks/${id}`,
     requestInit("PATCH", newFields),
   );
-  console.log("UPDATED TASK:", updatedTask);
   if (updatedTask.error) throw updatedTask;
   return updatedTask;
 }
