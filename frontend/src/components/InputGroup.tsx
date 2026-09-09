@@ -1,3 +1,5 @@
+import type { InputHTMLAttributes } from "react";
+
 const textSizeClasses = {
   sm: "text-sm",
   base: "text-base",
@@ -20,17 +22,21 @@ function getDates() {
   };
 }
 
+type InputGroupProps = {
+  name: string;
+  type?: string;
+  textSize?: keyof typeof textSizeClasses;
+  textarea?: boolean;
+} & InputHTMLAttributes<HTMLInputElement> &
+  InputHTMLAttributes<HTMLTextAreaElement>;
+
 export default function InputGroup({
   name,
   type = "text",
   textSize = "sm",
   textarea = false,
-}: {
-  name: string;
-  type?: string;
-  textSize?: keyof typeof textSizeClasses;
-  textarea?: boolean;
-}) {
+  ...props
+}: InputGroupProps) {
   return (
     <div>
       <label htmlFor={name} className={textSizeClasses[textSize]}>
@@ -42,6 +48,7 @@ export default function InputGroup({
           id={name}
           className="block bg-text rounded-md text-surface px-2 py-2 w-full"
           rows={3}
+          {...props}
         ></textarea>
       ) : (
         <input
@@ -50,6 +57,7 @@ export default function InputGroup({
           id={name}
           className="block bg-text rounded-md text-surface px-2 py-2 w-full"
           {...(type === "date" && getDates())}
+          {...props}
         />
       )}
     </div>
