@@ -27,7 +27,7 @@ export async function login(req: Request, res: Response) {
   const isValid = await argon2.verify(user.passwordHash, password);
   if (!isValid) return res.status(401).json({ error: "Invalid credentials" });
 
-  const accessToken = jwt.sign(user, JWT_SECRET, {
+  const accessToken = jwt.sign({ id: user.id }, JWT_SECRET, {
     expiresIn: "1d",
   });
 
@@ -54,7 +54,9 @@ export async function signup(req: Request, res: Response) {
     data: { name, email, passwordHash },
   });
 
-  const accessToken = jwt.sign(user, JWT_SECRET, { expiresIn: "1d" });
+  const accessToken = jwt.sign({ id: user.id }, JWT_SECRET, {
+    expiresIn: "1d",
+  });
 
   setAuthCookie(res, accessToken);
 
