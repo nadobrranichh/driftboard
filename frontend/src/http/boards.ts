@@ -1,7 +1,9 @@
 import { requestInit, sendRequest } from ".";
 import type { BoardType } from "../types";
 
-export async function createBoard(data: BoardType) {
+export async function createBoard(
+  data: Omit<BoardType, "columns" | "id"> & { columns: string[] },
+) {
   const resData = await sendRequest("/boards", requestInit("POST", data));
   if (resData.error) throw resData;
   return resData;
