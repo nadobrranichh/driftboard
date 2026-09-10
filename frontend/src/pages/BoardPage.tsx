@@ -1,7 +1,7 @@
-import { Check, X } from "lucide-react";
+import { ArrowLeft, Check, Settings, X } from "lucide-react";
 import { useRef, useState, type MouseEvent } from "react";
 import NewTaskForm from "../components/NewTaskForm";
-import { Outlet, useLocation, useParams } from "react-router";
+import { Outlet, useLocation, useNavigate, useParams } from "react-router";
 import type { ColumnType, TaskType } from "../types";
 import Task from "../components/Task";
 import ColumnPill from "../components/ColumnPill";
@@ -10,6 +10,7 @@ import useGetBoard from "../hooks/useGetBoard";
 import { boardColorRamps, boardIcons } from "../lists/boardIconsList";
 
 export default function BoardPage() {
+  const navigate = useNavigate();
   const [isNewTaskFormOpen, setIsNewTaskFormOpen] = useState(false);
   const [isAddingNewColumn, setIsAddingNewColumn] = useState(false);
   const newColumnRef = useRef<HTMLInputElement>(null);
@@ -54,13 +55,26 @@ export default function BoardPage() {
         />
       )}
       <Outlet />
-      <div className="flex flex-col justify-center items-center gap-1 -mt-3">
+      <div className="relative flex flex-col justify-center items-center gap-1 -mt-3">
         <div
           className={`h-full p-1.5 rounded-lg`}
           style={{ backgroundColor: colors.bg }}
         >
           <Icon style={{ height: "1.5rem" }} color={colors.fg} />
         </div>
+
+        <button
+          className="absolute top-0 left-0.5"
+          onClick={() => navigate("/home")}
+        >
+          <ArrowLeft className="text-text-muted" />
+        </button>
+        <button
+          className="absolute top-0 right-0.5"
+          onClick={() => navigate("settings")}
+        >
+          <Settings className="text-text-muted" />
+        </button>
 
         <h2 className="font-bold text-xl mb-2">{board.title}</h2>
       </div>
@@ -90,7 +104,7 @@ export default function BoardPage() {
                 onClick={(e) => handleAddColumn(e)}
               >
                 <Check />
-              </button>{" "}
+              </button>
               <button
                 className="cursor-pointer"
                 onClick={handleCancelAddColumn}
