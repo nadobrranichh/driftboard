@@ -5,20 +5,23 @@ import Backdrop from "./Backdrop";
 import { useState, type SyntheticEvent } from "react";
 import Button from "./Button";
 import useCreateBoard from "../hooks/useCreateBoard";
-import { boardColorRamps, boardIcons } from "../lists/boardIconsList";
+import IconAndColorPicker from "./IconAndColorPicker";
 
 const MAX_COLUMNS = 5;
 
 export default function NewBoardForm({ onClose }: { onClose: () => void }) {
   const createBoard = useCreateBoard();
-  const [selectedIcon, setSelectedIcon] = useState("");
-  const [selectedColor, setSelectedColor] = useState("");
+  const [iconValues, setIconValues] = useState({ icon: "", iconColor: "" });
   const [inputErrors, setInputErrors] = useState<string[]>([]);
   const [columns, setColumns] = useState<string[]>([
     "To do",
     "In progress",
     "Done",
   ]);
+
+  function updateIconValue(field: string, value: string) {
+    setIconValues((prev) => ({ ...prev, [field]: value }));
+  }
 
   function changeColumnName(index: number, newName: string) {
     setColumns((prev) => {
@@ -37,7 +40,7 @@ export default function NewBoardForm({ onClose }: { onClose: () => void }) {
 
   function addColumn() {
     setColumns((prev) =>
-      prev.length > MAX_COLUMNS ? prev : [...prev, "New Column"],
+      prev.length >= MAX_COLUMNS ? prev : [...prev, "New Column"],
     );
   }
 
@@ -49,8 +52,8 @@ export default function NewBoardForm({ onClose }: { onClose: () => void }) {
     if (!boardName || boardName.trim().length < 1)
       errors.push("Board name is not provided");
     if (columns.length < 1) errors.push("There must be at least one column");
-    if (selectedIcon === "") errors.push("Board icon isn't selected");
-    if (selectedColor === "") errors.push("Icon color isn't selected");
+    if (iconValues.icon === "") errors.push("Board icon isn't selected");
+    if (iconValues.iconColor === "") errors.push("Icon color isn't selected");
 
     if (errors.length > 0) {
       setInputErrors(errors);
@@ -61,9 +64,9 @@ export default function NewBoardForm({ onClose }: { onClose: () => void }) {
     createBoard.mutate({
       title: boardName,
       columns,
-      icon: selectedIcon,
-      iconColor: selectedColor,
+      ...iconValues,
     });
+    onClose();
   }
 
   return (
@@ -93,32 +96,11 @@ export default function NewBoardForm({ onClose }: { onClose: () => void }) {
             ))}
           </div>
         </div>
-        <div>
-          <p>Icon & Color</p>
-          <div className="flex justify-between mb-2">
-            {Object.entries(boardIcons).map(([name, Icon]) => (
-              <div
-                key={name}
-                onClick={() => setSelectedIcon(name)}
-                className={`p-2 rounded-md border border-border ${selectedIcon === name && "border-text"}`}
-              >
-                <Icon />
-              </div>
-            ))}
-          </div>
-
-          <div className="flex justify-between">
-            {Object.entries(boardColorRamps).map(([name, colors]) => (
-              <div
-                key={name}
-                onClick={() => setSelectedColor(name)}
-                className={`h-10.5 w-10.5 rounded-md border border-border ${selectedColor === name && "border-text"}`}
-                style={{ backgroundColor: colors.bg }}
-              ></div>
-            ))}
-          </div>
-        </div>
-
+        <IconAndColorPicker
+          icon={iconValues.icon}
+          iconColor={iconValues.iconColor}
+          onChange={updateIconValue}
+        />
         {inputErrors.length > 0 && (
           <div>
             {inputErrors.map((err) => (
