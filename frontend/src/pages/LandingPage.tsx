@@ -2,8 +2,11 @@ import features from "../lists/featuresList";
 import Button from "../components/Button";
 import Section from "../components/Section";
 import { boardColorRamps } from "../lists/boardIconsList";
+import { useNavigate } from "react-router";
 
 export default function LandingPage() {
+  const navigate = useNavigate();
+
   return (
     <main style={{ padding: 0 }}>
       <Section className="py-40">
@@ -16,8 +19,12 @@ export default function LandingPage() {
           momentum. Set up your first board in under a minute.
         </p>
         <div className="flex gap-3">
-          <Button>Sign up - it's free!</Button>
-          <Button outlined>See how it works</Button>
+          <Button className="p-2" onClick={() => navigate("/auth?mode=signup")}>
+            Sign up - it's free!
+          </Button>
+          <Button className="p-2" outlined>
+            See how it works
+          </Button>
         </div>
         <p className="text-text-muted text-sm">
           No credit card required &bull; Ready in 60 seconds
@@ -51,14 +58,18 @@ export default function LandingPage() {
           })}
         </div>
       </Section>
-      <Section className="bg-primary py-20">
+      <Section className="bg-primary py-40">
         <h2 className="text-surface font-bold text-3xl">
           Ready to get organized?
         </h2>
         <p className="text-bg">
           Join for free. Your first board is one click away.
         </p>
-        <Button outlined>
+        <Button
+          className="p-2"
+          outlined
+          onClick={() => navigate("/auth?mode=signup")}
+        >
           <p className="text-primary">Sign up - it's free</p>
         </Button>
       </Section>

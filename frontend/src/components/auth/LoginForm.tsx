@@ -36,7 +36,7 @@ export default function LoginForm({
         </div>
       )}
 
-      <Button>Log in</Button>
+      <Button className="p-2">Log in</Button>
       <p className="text-center ">
         No account?{" "}
         <Link to="?mode=signup" className="underline">
