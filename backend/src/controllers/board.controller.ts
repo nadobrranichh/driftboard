@@ -97,7 +97,7 @@ export async function updateBoard(req: Request, res: Response) {
   const boardId = Number(req.params.id);
   if (Number.isNaN(boardId))
     return res.status(400).json({ error: "Invalid board ID" });
-  const { title, icon, iconColor } = req.body;
+  const { title, icon, iconColor, members } = req.body;
 
   if (!title && !icon && !iconColor)
     return res.status(400).json({ error: "No data provided to update" });
@@ -105,6 +105,35 @@ export async function updateBoard(req: Request, res: Response) {
   const isMember = await checkIfIsMember(boardId, req.user.id);
   if (!isMember)
     return res.status(403).json({ error: "Not a member of this board" });
+
+  if (members?.length > 0) {
+    const boardMembers = await prisma.boardMember.findMany({
+      where: { boardId },
+    });
+
+    const membersIds = members.map((m) => m.id);
+    const boardMembersIds = boardMembers.map((bm) => bm.userId);
+
+    const memberIdsToRemove = boardMembersIds.filter(
+      (id) => !membersIds.includes(id),
+    );
+    const memberIdsToAdd = membersIds.filter(
+      (id: number) => !boardMembersIds.includes(id),
+    );
+
+    await prisma.$transaction(async (tx) => {
+      if (memberIdsToRemove.length > 0) {
+        await tx.boardMember.deleteMany({
+          where: { boardId, userId: { in: memberIdsToRemove } },
+        });
+      }
+
+      if (memberIdsToAdd.length > 0)
+        await tx.boardMember.createMany({
+          data: memberIdsToAdd.map((userId: number) => ({ userId, boardId })),
+        });
+    });
+  }
 
   try {
     const updated = await prisma.board.update({
@@ -115,7 +144,9 @@ export async function updateBoard(req: Request, res: Response) {
         ...(iconColor && iconColor.trim().length > 0 && { iconColor }),
       },
     });
-    return res.json({ board: updated });
+    return res.json({
+      board: { ...updated, ...(members?.length > 0 && { members }) },
+    });
   } catch (error: any) {
     if (error.code === "P2025")
       return res.status(404).json({ error: "Board not found" });
