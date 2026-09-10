@@ -1,7 +1,7 @@
 import { requestInit, sendRequest } from ".";
 import type { TaskType } from "../types";
 
-export async function createTask(task: TaskType) {
+export async function createTask(task: Omit<TaskType, "id" | "position">) {
   const data = await sendRequest(
     "/tasks",
     requestInit("POST", { ...task, position: 0, assigneeId: null }),

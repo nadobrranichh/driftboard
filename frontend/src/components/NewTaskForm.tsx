@@ -15,7 +15,6 @@ export default function NewTaskForm({
 }) {
   const { boardId } = useParams();
   const [inputErrors, setInputErrors] = useState<string[]>([]);
-  console.log("NEW TASK FORM SAYS BOARDID:", boardId, Number(boardId));
   const { mutate, error } = useCreateTask(Number(boardId));
   function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
     e.preventDefault();

@@ -33,4 +33,5 @@ export type BoardType = {
   iconColor: string;
   taskCount?: number;
   columns?: ColumnType[];
+  members?: User[];
 };

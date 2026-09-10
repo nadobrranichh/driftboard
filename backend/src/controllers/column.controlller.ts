@@ -1,7 +1,6 @@
 import type { Request, Response } from "express";
 import { checkIfIsMember } from "../util/boardMembership.js";
 import prisma from "../config/db.js";
-import { error } from "node:console";
 
 export async function addColumn(req: Request, res: Response) {
   if (!req.user) return res.status(401).json({ error: "Not authenticated" });

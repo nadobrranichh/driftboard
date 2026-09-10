@@ -4,7 +4,6 @@ import { queryClient } from "../http";
 import type { BoardType } from "../types";
 
 export default function useCreateTask(boardId: number) {
-  console.log(queryClient);
   return useMutation({
     mutationFn: createTask,
     onSuccess: (data) => {
