@@ -9,7 +9,7 @@ export default function LandingPage() {
 
   return (
     <main style={{ padding: 0 }}>
-      <Section className="py-40">
+      <Section className="py-40 lg:py-80">
         <h2 className="text-4xl font-bold">
           Organise work that actually{" "}
           <span className="text-primary">flows.</span>
@@ -30,18 +30,18 @@ export default function LandingPage() {
           No credit card required &bull; Ready in 60 seconds
         </p>
       </Section>
-      <Section className="py-20 bg-surface">
+      <Section className="py-20 lg:py-80 bg-surface">
         <p className="uppercase text-primary font-bold">why driftboard?</p>
         <h2 className="text-4xl font-bold">
           Built for how teams actually work
         </h2>
-        <div className="flex flex-col md:flex-row gap-5 py-5 px-10">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 py-5 px-10 max-w-[90%] xl:max-w-[70%]">
           {features.map((f) => {
             const color = boardColorRamps[f.color];
             return (
               <div
                 key={f.title}
-                className="bg-surface border border-border rounded-xl p-5 text-start"
+                className="bg-surface border border-border rounded-xl p-5 text-start min-w-70"
               >
                 <div
                   className="rounded-lg w-9 h-9 flex items-center justify-center mb-3"
@@ -58,7 +58,7 @@ export default function LandingPage() {
           })}
         </div>
       </Section>
-      <Section className="bg-primary py-40">
+      <Section className="bg-primary py-40 lg:py-80">
         <h2 className="text-surface font-bold text-3xl">
           Ready to get organized?
         </h2>
