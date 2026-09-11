@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { boardColorRamps, boardIcons } from "../lists/boardIconsList";
 
 export default function IconAndColorPicker({
@@ -9,6 +10,11 @@ export default function IconAndColorPicker({
   iconColor: string;
   onChange: (field: "icon" | "iconColor", value: string) => void;
 }) {
+  const [hovering, setHovering] = useState({ icon: "", iconColor: "" });
+  function updateHovering(field: string, value: string) {
+    setHovering((prev) => ({ ...prev, [field]: value }));
+  }
+
   return (
     <div>
       <p>Icon & Color</p>
@@ -16,8 +22,10 @@ export default function IconAndColorPicker({
         {Object.entries(boardIcons).map(([name, Icon]) => (
           <div
             key={name}
+            onMouseEnter={() => updateHovering("icon", name)}
+            onMouseLeave={() => updateHovering("icon", "")}
             onClick={() => onChange("icon", name)}
-            className={`p-2 rounded-md border border-border ${icon === name && "border-text"}`}
+            className={`p-2 rounded-md border border-border cursor-pointer ${icon === name && "border-text"} ${hovering.icon === name && "bg-border"}`}
           >
             <Icon />
           </div>
@@ -27,9 +35,14 @@ export default function IconAndColorPicker({
         {Object.entries(boardColorRamps).map(([name, colors]) => (
           <div
             key={name}
+            onMouseEnter={() => updateHovering("iconColor", name)}
+            onMouseLeave={() => updateHovering("iconColor", "")}
             onClick={() => onChange("iconColor", name)}
-            className={`h-10.5 w-10.5 rounded-md border border-border ${iconColor === name && "border-text"}`}
-            style={{ backgroundColor: colors.bg }}
+            className={`h-10.5 w-10.5 rounded-md border border-border cursor-pointer ${iconColor === name && "border-text"}`}
+            style={{
+              backgroundColor:
+                hovering.iconColor === name ? colors.fg : colors.bg,
+            }}
           />
         ))}
       </div>
