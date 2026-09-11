@@ -12,7 +12,6 @@ const COOKIE_MAX_AGE = 24 * 60 * 60 * 1000; // 1 day
 function setAuthCookie(res: Response, token: String) {
   res.cookie("token", token, {
     httpOnly: true,
-    sameSite: "strict",
     maxAge: COOKIE_MAX_AGE,
   });
 }
@@ -28,7 +27,7 @@ export async function login(req: Request, res: Response) {
   const isValid = await argon2.verify(user.passwordHash, password);
   if (!isValid) return res.status(401).json({ error: "Invalid credentials" });
 
-  const accessToken = jwt.sign(user, JWT_SECRET, {
+  const accessToken = jwt.sign({ id: user.id }, JWT_SECRET, {
     expiresIn: "1d",
   });
 
@@ -55,7 +54,9 @@ export async function signup(req: Request, res: Response) {
     data: { name, email, passwordHash },
   });
 
-  const accessToken = jwt.sign(user, JWT_SECRET, { expiresIn: "1d" });
+  const accessToken = jwt.sign({ id: user.id }, JWT_SECRET, {
+    expiresIn: "1d",
+  });
 
   setAuthCookie(res, accessToken);
 
@@ -63,4 +64,9 @@ export async function signup(req: Request, res: Response) {
     message: "Signed up successfully",
     user: { id: user.id, name: user.name, email: user.email },
   });
+}
+
+export async function me(req: Request, res: Response) {
+  if (!req.user) return res.status(401).json({ error: "Not authenticated" });
+  return res.json({ user: req.user });
 }

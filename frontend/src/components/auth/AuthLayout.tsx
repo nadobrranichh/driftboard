@@ -1,9 +1,18 @@
-import type { ReactNode } from "react";
+import type { ReactNode, SyntheticEvent } from "react";
 import Logo from "/favicon.svg";
 
-export default function AuthLayout({ children }: { children: ReactNode }) {
+export default function AuthLayout({
+  onSubmit,
+  children,
+}: {
+  onSubmit: (e: SyntheticEvent<HTMLFormElement>) => void;
+  children: ReactNode;
+}) {
   return (
-    <form className="bg-surface flex flex-col gap-5 rounded-xl p-5 w-80 border border-primary shadow-xl">
+    <form
+      onSubmit={onSubmit}
+      className="bg-surface flex flex-col gap-5 rounded-xl p-5 w-80 border border-primary shadow-xl"
+    >
       <div>
         <div className="flex items-center gap-1">
           <div className="bg-primary rounded-md p-1">

@@ -6,6 +6,8 @@ import BoardPage from "../pages/BoardPage";
 import TaskDetail from "../components/TaskDetail";
 import NotFoundPage from "../pages/NotFoundPage";
 import LandingPage from "../pages/LandingPage";
+import BoardSettings from "../components/BoardSettings";
+import ProtectedRoute from "../pages/ProtectedRoute";
 
 const router = createBrowserRouter([
   {
@@ -13,11 +15,19 @@ const router = createBrowserRouter([
     element: <RootLayout />,
     children: [
       { index: true, element: <LandingPage /> },
-      { path: "home", element: <HomePage /> },
       {
-        path: "board/:boardId",
-        element: <BoardPage />,
-        children: [{ path: "task/:taskId", element: <TaskDetail /> }],
+        element: <ProtectedRoute />,
+        children: [
+          { path: "home", element: <HomePage /> },
+          {
+            path: "board/:boardId",
+            element: <BoardPage />,
+            children: [
+              { path: "task/:taskId", element: <TaskDetail /> },
+              { path: "settings", element: <BoardSettings /> },
+            ],
+          },
+        ],
       },
     ],
   },
