@@ -31,4 +31,12 @@ main {
   main {
     padding: 1.5rem 15rem;
   }
+
+  .p-1-5 {
+    padding: 1.5rem;
+  }
+
+  #root {
+    height: 100vh;
+  }
 }
