@@ -90,14 +90,14 @@ export default function BoardSettings() {
   return (
     <Backdrop onClick={() => navigate("..")}>
       <div
-        className="w-9/10 md:w-1/2 bg-surface rounded-xl p-6 flex flex-col gap-3 relative"
+        className="bg-surface rounded-xl p-6 flex flex-col gap-3 relative"
         onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={() => navigate("..")}
           className="absolute top-4 right-4"
         >
-          <X />
+          <X className="cursor-pointer" />
         </button>
         <h2 className="text-2xl text-center font-bold">Board Settings</h2>
         <InputGroup
@@ -120,7 +120,7 @@ export default function BoardSettings() {
               >
                 {m.name}{" "}
                 <button onClick={() => handleRemoveMember(m.id)}>
-                  <X />
+                  <X className="cursor-pointer" />
                 </button>
               </div>
             ))}

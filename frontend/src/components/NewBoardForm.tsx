@@ -1,4 +1,4 @@
-import { Plus } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import InputGroup from "./InputGroup";
 import NewBoardColumnItem from "./NewBoardColumnItem";
 import Backdrop from "./Backdrop";
@@ -74,8 +74,11 @@ export default function NewBoardForm({ onClose }: { onClose: () => void }) {
       <form
         onSubmit={handleSubmit}
         onClick={(e) => e.stopPropagation()}
-        className="bg-surface rounded-xl border border-border w-80 p-4 flex flex-col gap-4"
+        className="bg-surface rounded-xl border border-border w-80 p-4 flex flex-col gap-4 relative"
       >
+        <button onClick={onClose} className="absolute top-4 right-4">
+          <X className="cursor-pointer" />
+        </button>
         <h2 className="text-center font-bold text-2xl">New Board</h2>
         <InputGroup name="board-name" textSize="base" />
         <div>
