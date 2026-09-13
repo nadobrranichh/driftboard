@@ -5,6 +5,7 @@ import Button from "./Button";
 import { validateNewTaskFields } from "../utils/formFieldValidation";
 import useCreateTask from "../hooks/useCreateTask";
 import { useParams } from "react-router";
+import { X } from "lucide-react";
 
 export default function NewTaskForm({
   columnId,
@@ -31,8 +32,14 @@ export default function NewTaskForm({
       <form
         onClick={(e) => e.stopPropagation()}
         onSubmit={handleSubmit}
-        className="bg-surface rounded-xl border border-border w-80 p-4 flex flex-col gap-4"
+        className="bg-surface rounded-xl border border-border w-80 p-4 flex flex-col gap-4 relative"
       >
+        <button
+          className="absolute top-4 right-4 cursor-pointer"
+          onClick={onClose}
+        >
+          <X />
+        </button>
         {error && (
           <div className="absolute top-1/2 left-1/2 -translate-1/2 shadow-xl p-5 bg-surface rounded-xl border border-danger text-center">
             <h2 className="text-danger font-bold text-xl">Error!</h2>

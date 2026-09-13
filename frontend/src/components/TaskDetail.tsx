@@ -83,8 +83,8 @@ export default function TaskDetail() {
         <div className="flex justify-between mb-2">
           <p className="text-text-muted">Task #{task.id}</p>
           <div className="flex gap-5">
-            <Trash />
-            <X onClick={() => navigate("..")} />
+            <Trash className="cursor-pointer" />
+            <X className="cursor-pointer" onClick={() => navigate("..")} />
           </div>
         </div>
         {isEditing ? (

@@ -30,11 +30,18 @@ export default function HomePage() {
           <Plus className="text-surface" />
         </button>
       </div>
-      <div className="py-3 flex flex-col gap-3">
+      <div className="py-3 flex flex-col lg:grid lg:grid-cols-3 gap-3">
         {boards &&
           boards.map((board: BoardType) => (
             <Board key={board.id} data={board} />
           ))}
+        <div
+          className="flex flex-col p-4 items-center justify-center rounded-lg border border-border bg-surface min-h-20 cursor-pointer"
+          onClick={() => setIsFormOpen(true)}
+        >
+          <Plus className="text-text-muted" />
+          <p className="font-semibold text-text-muted">Create a new board</p>
+        </div>
       </div>
     </main>
   );

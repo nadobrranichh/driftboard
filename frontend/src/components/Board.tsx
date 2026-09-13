@@ -11,7 +11,7 @@ export default function Board({ data }: { data: BoardType }) {
     boardColorRamps[data.iconColor as keyof typeof boardColorRamps];
   return (
     <div
-      className="flex gap-3 p-4 bg-surface rounded-lg border border-border"
+      className="flex gap-3 p-4 bg-surface rounded-lg border border-border min-h-20 cursor-pointer"
       onClick={() => navigate(`/board/${data.id}`)}
     >
       <div

@@ -6,7 +6,7 @@ export default function NotFoundPage() {
     <main className="flex flex-col justify-center items-center gap-2">
       <h2 className="text-2xl font-semibold">Page not found</h2>
       <p>Looks like you entered an invalid url.</p>
-      <Button>
+      <Button className="p-2">
         <Link to="/" style={{ textDecoration: "none" }}>
           Go back
         </Link>

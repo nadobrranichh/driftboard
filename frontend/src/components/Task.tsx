@@ -7,7 +7,7 @@ export default function Task({ data }: { data: TaskType }) {
   const navigate = useNavigate();
   return (
     <div
-      className="bg-surface rounded-xl border border-border p-3"
+      className="bg-surface rounded-xl border border-border p-3 cursor-pointer"
       onClick={() => navigate(`task/${data.id}`)}
     >
       <p className="font-semibold text-lg">{data.title}</p>

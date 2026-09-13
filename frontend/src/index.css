@@ -26,3 +26,17 @@ main {
   flex: 1;
   padding: 1.5rem;
 }
+
+@media (min-width: 1280px) {
+  main {
+    padding: 1.5rem 15rem;
+  }
+
+  .p-1-5 {
+    padding: 1.5rem;
+  }
+
+  #root {
+    height: 100vh;
+  }
+}

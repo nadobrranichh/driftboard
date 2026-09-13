@@ -28,7 +28,7 @@ export default function NewBoardColumnItem({
         {isEditing ? (
           <Check
             size={20}
-            className="text-surface"
+            className="text-surface cursor-pointer"
             onClick={() => {
               setIsEditing(false);
               changeColumnName(nameBeforeSubmit);
@@ -37,11 +37,15 @@ export default function NewBoardColumnItem({
         ) : (
           <Pencil
             size={20}
-            className="text-surface"
+            className="text-surface cursor-pointer"
             onClick={() => setIsEditing(true)}
           />
         )}
-        <X size={23} className="text-surface" onClick={deleteColumn} />
+        <X
+          size={23}
+          className="text-surface cursor-pointer"
+          onClick={deleteColumn}
+        />
       </div>
     </div>
   );
