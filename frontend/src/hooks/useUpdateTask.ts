@@ -24,40 +24,25 @@ export default function useUpdateTask(boardId: number) {
         (oldBoard: { board: BoardType } | undefined) => {
           if (!oldBoard) return oldBoard;
           const board = oldBoard.board;
-          const hasMovedColumns =
-            oldColumnId && oldColumnId !== updatedTask.columnId;
 
-          return {
-            board: {
-              ...board,
-              columns: hasMovedColumns
-                ? board.columns!.map((col) => {
-                    if (col.id === oldColumnId)
-                      return {
-                        ...col,
-                        tasks: col.tasks!.filter(
-                          (t) => t.id !== updatedTask.id,
-                        ),
-                      };
-                    if (col.id === updatedTask.columnId)
-                      return { ...col, tasks: [...col.tasks!, updatedTask] };
-                    else return col;
-                  })
-                : board.columns!.map((col) =>
-                    col.id === updatedTask.columnId
-                      ? {
-                          ...col,
-                          tasks: [
-                            ...col.tasks!.filter(
-                              (t) => t.id !== updatedTask.id,
-                            ),
-                            updatedTask,
-                          ],
-                        }
-                      : col,
-                  ),
-            },
-          };
+          const columns = board.columns!.map((col) => {
+            const isFilterColumn =
+              col.id === oldColumnId || col.id === updatedTask.columnId;
+
+            return {
+              ...col,
+              tasks: isFilterColumn
+                ? col.tasks!.filter((t) => t.id !== updatedTask.id)
+                : col.tasks,
+            };
+          });
+
+          const targetCol = columns.find((c) => c.id === updatedTask.columnId);
+          if (targetCol) {
+            targetCol.tasks = [...(targetCol.tasks || []), updatedTask];
+          }
+
+          return { board: { ...board, columns } };
         },
       );
     },
