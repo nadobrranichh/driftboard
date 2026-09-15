@@ -3,6 +3,9 @@ import type { BoardType } from "../types";
 import { boardColorRamps, boardIcons } from "../lists/boardIconsList";
 import { isSingular } from "../utils/strings";
 import { useNavigate } from "react-router";
+import { motion } from "framer-motion";
+import { fade } from "../motion/variants";
+import { hoverScale, tapScale } from "../motion/value-presets";
 
 export default function Board({ data }: { data: BoardType }) {
   const navigate = useNavigate();
@@ -10,7 +13,10 @@ export default function Board({ data }: { data: BoardType }) {
   const colors =
     boardColorRamps[data.iconColor as keyof typeof boardColorRamps];
   return (
-    <div
+    <motion.div
+      variants={fade()}
+      whileHover={hoverScale}
+      whileTap={tapScale}
       className="flex gap-3 p-4 bg-surface rounded-lg border border-border min-h-20 cursor-pointer"
       onClick={() => navigate(`/board/${data.id}`)}
     >
@@ -27,6 +33,6 @@ export default function Board({ data }: { data: BoardType }) {
         </p>
       </div>
       <ChevronRight className="ml-auto my-auto" />
-    </div>
+    </motion.div>
   );
 }
