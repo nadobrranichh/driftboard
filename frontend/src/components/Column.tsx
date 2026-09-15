@@ -5,6 +5,8 @@ import {
 import type { ColumnType, TaskType } from "../types";
 import Task from "./Task";
 import { useDroppable } from "@dnd-kit/core";
+import { motion } from "framer-motion";
+import { fade } from "../motion/variants";
 
 export default function Column({
   data,
@@ -15,9 +17,16 @@ export default function Column({
 }) {
   const { setNodeRef } = useDroppable({ id: `${data.id}-column` });
   return (
-    <div ref={setNodeRef} className="bg-border lg:w-80 p-3 rounded-xl shrink-0">
+    <motion.div
+      ref={setNodeRef}
+      variants={fade()}
+      className="bg-border lg:w-80 p-3 rounded-xl shrink-0"
+    >
       <p className="text-center mb-3 font-semibold">{data.title}</p>
-      <div className="flex flex-col gap-3">
+      <div
+        // variants={fade({ withStagger: true })}
+        className="flex flex-col gap-3"
+      >
         <SortableContext
           items={data.tasks?.map((t) => `${t.id}-task`) || []}
           strategy={verticalListSortingStrategy}
@@ -33,6 +42,6 @@ export default function Column({
           <p className="text-center text-text-muted">+ New Task</p>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

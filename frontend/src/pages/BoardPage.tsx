@@ -25,6 +25,8 @@ import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import useUpdateTask from "../hooks/useUpdateTask";
 import { findColumnId } from "../utils/tasks";
 import { moveTaskInCache, syncTaskPosition } from "../http/boardCacheUpdates";
+import { motion } from "framer-motion";
+import { fade } from "../motion/variants";
 
 export default function BoardPage() {
   const { isLg } = useBreakpoints();
@@ -133,7 +135,12 @@ export default function BoardPage() {
           onDragOver={handleDragOver}
           onDragEnd={handleDragEnd}
         >
-          <div className="flex-1 flex gap-5 h-full overflow-x-auto">
+          <motion.div
+            variants={fade({ withStagger: true })}
+            initial="hidden"
+            animate="visible"
+            className="flex-1 flex gap-5 h-full overflow-x-auto"
+          >
             {board &&
               board.columns.map((col: ColumnType) => (
                 <Column
@@ -143,7 +150,7 @@ export default function BoardPage() {
                 />
               ))}
             <NewColumn />
-          </div>
+          </motion.div>
         </DndContext>
       ) : (
         <>
