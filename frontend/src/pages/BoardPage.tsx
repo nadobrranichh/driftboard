@@ -1,40 +1,103 @@
 import { ArrowLeft, Settings } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import NewTaskForm from "../components/NewTaskForm";
 import { Outlet, useLocation, useNavigate, useParams } from "react-router";
-import type { ColumnType } from "../types";
+import type { BoardType, ColumnType, TaskType } from "../types";
 import ColumnPill from "../components/ColumnPill";
 import useGetBoard from "../hooks/useGetBoard";
 import { boardColorRamps, boardIcons } from "../lists/boardIconsList";
 import useBreakpoints from "../hooks/useBreakpoints";
 import Column from "../components/Column";
 import NewColumn from "../components/NewColumn";
+import {
+  closestCorners,
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+  type DragOverEvent,
+  type DragStartEvent,
+  type UniqueIdentifier,
+} from "@dnd-kit/core";
+import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
+import useUpdateTask from "../hooks/useUpdateTask";
+import { findColumnId } from "../utils/tasks";
+import { moveTaskInCache, syncTaskPosition } from "../http/boardCacheUpdates";
 
 export default function BoardPage() {
   const { isLg } = useBreakpoints();
   const navigate = useNavigate();
-  const [isNewTaskFormOpen, setIsNewTaskFormOpen] = useState(false);
   const { boardId } = useParams();
   const location = useLocation();
+  const updateTask = useUpdateTask(Number(boardId));
   const boardQuery = useGetBoard(Number(boardId), location.state);
-  const board = boardQuery.data ? boardQuery.data.board : null;
-  const [activeColumnId, setActiveColumnId] = useState(-1);
-  const activeColumn = board
-    ? board.columns.find((col: ColumnType) => col.id === activeColumnId)
+  const board: BoardType | null = boardQuery.data
+    ? boardQuery.data.board
     : null;
+  const startDraggingRef = useRef<Partial<TaskType>>(null);
+  const [isNewTaskFormOpen, setIsNewTaskFormOpen] = useState(false);
+  const [activeColumnId, setActiveColumnId] = useState<UniqueIdentifier | null>(
+    null,
+  );
+  const activeColumn =
+    (board &&
+      board.columns &&
+      board.columns.find((col: ColumnType) => col.id === activeColumnId)) ||
+    null;
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 10, tolerance: 5, delay: 75 },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  );
+
+  function handleAddingNewTask(columnId: UniqueIdentifier) {
+    setIsNewTaskFormOpen(true);
+    setActiveColumnId(columnId);
+  }
+
+  function handleDragStart(e: DragStartEvent) {
+    if (!board?.columns) return;
+    const columnId = findColumnId(board, e.active.id);
+    if (!columnId) return;
+    startDraggingRef.current = { columnId };
+  }
+
+  function handleDragOver(e: DragOverEvent) {
+    const { active, over } = e;
+    if (!active || !over || !board?.columns) return;
+
+    moveTaskInCache({ board, active, over });
+  }
+
+  function handleDragEnd(e: DragEndEvent) {
+    const { active } = e;
+    if (!active || !board?.columns) return;
+    const oldColumnId = startDraggingRef.current?.columnId;
+    if (!oldColumnId) return;
+
+    syncTaskPosition({ oldColumnId, active, board, mutate: updateTask.mutate });
+
+    startDraggingRef.current = null;
+  }
 
   const Icon = board ? boardIcons[board.icon] : null;
   const colors = board
     ? boardColorRamps[board.iconColor as keyof typeof boardColorRamps]
     : null;
 
-  if (!board || !colors || !Icon) return <p>Loading...</p>;
+  if (!board?.columns || !colors || !Icon) return <p>Loading...</p>;
 
   return (
     <main className="flex flex-col p-1-5">
-      {isNewTaskFormOpen && (
+      {isNewTaskFormOpen && activeColumnId && (
         <NewTaskForm
-          columnId={activeColumnId}
+          columnId={Number(activeColumnId)}
           onClose={() => setIsNewTaskFormOpen(false)}
         />
       )}
@@ -63,17 +126,25 @@ export default function BoardPage() {
         <h2 className="font-bold text-xl mb-2">{board.title}</h2>
       </div>
       {isLg ? (
-        <div className="flex-1 flex gap-5 h-full overflow-x-auto">
-          {board &&
-            board.columns.map((col: ColumnType) => (
-              <Column
-                data={col}
-                key={col.id}
-                onNewTask={() => setIsNewTaskFormOpen(true)}
-              />
-            ))}
-          <NewColumn />
-        </div>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCorners}
+          onDragStart={handleDragStart}
+          onDragOver={handleDragOver}
+          onDragEnd={handleDragEnd}
+        >
+          <div className="flex-1 flex gap-5 h-full overflow-x-auto">
+            {board &&
+              board.columns.map((col: ColumnType) => (
+                <Column
+                  data={col}
+                  key={col.id}
+                  onNewTask={() => handleAddingNewTask(col.id)}
+                />
+              ))}
+            <NewColumn />
+          </div>
+        </DndContext>
       ) : (
         <>
           <p className="font-semibold text-xl mb-2">Columns</p>
@@ -84,7 +155,7 @@ export default function BoardPage() {
                   key={col.id}
                   data={col}
                   handleClick={() => setActiveColumnId(col.id)}
-                  activeColumnId={activeColumnId}
+                  activeColumnId={Number(activeColumnId)}
                 />
               ))}
             <NewColumn />
