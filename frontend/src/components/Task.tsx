@@ -2,12 +2,32 @@ import type { TaskType } from "../types";
 import { Circle } from "lucide-react";
 import { formatDate } from "../utils/strings";
 import { useNavigate } from "react-router";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 export default function Task({ data }: { data: TaskType }) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: `${data.id}-task` });
   const navigate = useNavigate();
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
   return (
     <div
-      className="bg-surface rounded-xl border border-border p-3 cursor-pointer"
+      {...attributes}
+      {...listeners}
+      ref={setNodeRef}
+      style={style}
+      className={`bg-surface rounded-xl border border-border p-3 cursor-pointer ${isDragging && "z-10 border-primary"}`}
       onClick={() => navigate(`task/${data.id}`)}
     >
       <p className="font-semibold text-lg">{data.title}</p>
