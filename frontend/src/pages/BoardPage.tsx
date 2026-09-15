@@ -154,8 +154,8 @@ export default function BoardPage() {
                 <ColumnPill
                   key={col.id}
                   data={col}
-                  handleClick={() => setActiveColumnId(col.id)}
-                  activeColumnId={Number(activeColumnId)}
+                  onClick={() => setActiveColumnId(col.id)}
+                  isActive={activeColumnId === col.id}
                 />
               ))}
             <NewColumn />

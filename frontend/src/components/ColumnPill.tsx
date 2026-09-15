@@ -2,24 +2,23 @@ import type { ColumnType } from "../types";
 
 export default function ColumnPill({
   data,
-  activeColumnId,
-  handleClick,
+  isActive,
+  onClick,
 }: {
   data: ColumnType;
-  activeColumnId: number;
-  handleClick: () => void;
+  isActive: boolean;
+  onClick: () => void;
 }) {
   return (
     <div
       className="rounded-3xl border border-border bg-surface py-2 px-4"
       style={{
-        backgroundColor:
-          activeColumnId === data.id
-            ? "var(--color-primary)"
-            : "var(--color-surface)",
-        color: activeColumnId === data.id ? "var(--color-surface)" : "black",
+        backgroundColor: isActive
+          ? "var(--color-primary)"
+          : "var(--color-surface)",
+        color: isActive ? "var(--color-surface)" : "black",
       }}
-      onClick={handleClick}
+      onClick={onClick}
     >
       {data.title} &bull; {data.tasks!.length}
     </div>
