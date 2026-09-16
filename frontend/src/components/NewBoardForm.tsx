@@ -6,6 +6,8 @@ import { useState, type SyntheticEvent } from "react";
 import Button from "./Button";
 import useCreateBoard from "../hooks/useCreateBoard";
 import IconAndColorPicker from "./IconAndColorPicker";
+import { motion } from "motion/react";
+import { fade } from "../motion/variants";
 
 const MAX_COLUMNS = 5;
 
@@ -71,7 +73,11 @@ export default function NewBoardForm({ onClose }: { onClose: () => void }) {
 
   return (
     <Backdrop onClick={onClose}>
-      <form
+      <motion.form
+        variants={fade({ withStagger: true })}
+        initial="hidden"
+        animate="visible"
+        exit="exit"
         onSubmit={handleSubmit}
         onClick={(e) => e.stopPropagation()}
         className="bg-surface rounded-xl border border-border w-80 p-4 flex flex-col gap-4 relative"
@@ -88,7 +94,10 @@ export default function NewBoardForm({ onClose }: { onClose: () => void }) {
               <Plus className="text-surface" />
             </Button>
           </div>
-          <div className="bg-bg border border-text p-2 flex flex-col gap-2 rounded-md">
+          <motion.div
+            variants={fade({ withStagger: true })}
+            className="bg-bg border border-text p-2 flex flex-col gap-2 rounded-md"
+          >
             {columns.map((col, i) => (
               <NewBoardColumnItem
                 key={i}
@@ -97,7 +106,7 @@ export default function NewBoardForm({ onClose }: { onClose: () => void }) {
                 deleteColumn={deleteColumn.bind(null, i)}
               />
             ))}
-          </div>
+          </motion.div>
         </div>
         <IconAndColorPicker
           icon={iconValues.icon}
@@ -115,7 +124,7 @@ export default function NewBoardForm({ onClose }: { onClose: () => void }) {
         )}
 
         <Button className="p-3">Create Board</Button>
-      </form>
+      </motion.form>
     </Backdrop>
   );
 }

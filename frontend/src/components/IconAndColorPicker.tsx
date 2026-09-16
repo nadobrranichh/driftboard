@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { boardColorRamps, boardIcons } from "../lists/boardIconsList";
+import { motion } from "framer-motion";
+import { fade } from "../motion/variants";
+import { hoverScale, tapScale } from "../motion/value-presets";
 
 export default function IconAndColorPicker({
   icon,
@@ -16,25 +19,29 @@ export default function IconAndColorPicker({
   }
 
   return (
-    <div>
+    <motion.div variants={fade({ withStagger: true })}>
       <p>Icon & Color</p>
-      <div className="flex justify-between mb-2">
+      <motion.div variants={fade()} className="flex justify-between mb-2">
         {Object.entries(boardIcons).map(([name, Icon]) => (
-          <div
+          <motion.div
             key={name}
+            whileHover={hoverScale}
+            whileTap={tapScale}
             onMouseEnter={() => updateHovering("icon", name)}
             onMouseLeave={() => updateHovering("icon", "")}
             onClick={() => onChange("icon", name)}
             className={`p-2 rounded-md border border-border cursor-pointer ${icon === name && "border-text"} ${hovering.icon === name && "bg-border"}`}
           >
             <Icon />
-          </div>
+          </motion.div>
         ))}
-      </div>
-      <div className="flex justify-between">
+      </motion.div>
+      <motion.div variants={fade()} className="flex justify-between">
         {Object.entries(boardColorRamps).map(([name, colors]) => (
-          <div
+          <motion.div
             key={name}
+            whileHover={hoverScale}
+            whileTap={tapScale}
             onMouseEnter={() => updateHovering("iconColor", name)}
             onMouseLeave={() => updateHovering("iconColor", "")}
             onClick={() => onChange("iconColor", name)}
@@ -45,7 +52,7 @@ export default function IconAndColorPicker({
             }}
           />
         ))}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

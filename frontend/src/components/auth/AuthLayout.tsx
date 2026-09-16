@@ -1,5 +1,7 @@
 import type { ReactNode, SyntheticEvent } from "react";
 import Logo from "/favicon.svg";
+import { motion } from "framer-motion";
+import { fade } from "../../motion/variants";
 
 export default function AuthLayout({
   onSubmit,
@@ -9,7 +11,10 @@ export default function AuthLayout({
   children: ReactNode;
 }) {
   return (
-    <form
+    <motion.form
+      variants={fade({ withStagger: true })}
+      initial="hidden"
+      animate="visible"
       onSubmit={onSubmit}
       className="bg-surface flex flex-col gap-5 rounded-xl p-5 w-80 border border-primary shadow-xl"
     >
@@ -24,6 +29,6 @@ export default function AuthLayout({
       </div>
 
       {children}
-    </form>
+    </motion.form>
   );
 }

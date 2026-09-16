@@ -6,6 +6,8 @@ import { validateNewTaskFields } from "../utils/formFieldValidation";
 import useCreateTask from "../hooks/useCreateTask";
 import { useParams } from "react-router";
 import { X } from "lucide-react";
+import { motion } from "framer-motion";
+import { fade } from "../motion/variants";
 
 export default function NewTaskForm({
   columnId,
@@ -29,7 +31,11 @@ export default function NewTaskForm({
 
   return (
     <Backdrop onClick={onClose}>
-      <form
+      <motion.form
+        variants={fade({ withStagger: true })}
+        initial="hidden"
+        animate="visible"
+        exit="exit"
         onClick={(e) => e.stopPropagation()}
         onSubmit={handleSubmit}
         className="bg-surface rounded-xl border border-border w-80 p-4 flex flex-col gap-4 relative"
@@ -60,7 +66,7 @@ export default function NewTaskForm({
           </div>
         )}
         <Button className="p-3">Add Task</Button>
-      </form>
+      </motion.form>
     </Backdrop>
   );
 }

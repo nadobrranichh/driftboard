@@ -3,6 +3,8 @@ import Button from "../components/Button";
 import Section from "../components/Section";
 import { boardColorRamps } from "../lists/boardIconsList";
 import { useNavigate } from "react-router";
+import { motion } from "framer-motion";
+import { fade } from "../motion/variants";
 
 export default function LandingPage() {
   const navigate = useNavigate();
@@ -39,7 +41,8 @@ export default function LandingPage() {
           {features.map((f) => {
             const color = boardColorRamps[f.color];
             return (
-              <div
+              <motion.div
+                variants={fade()}
                 key={f.title}
                 className="bg-surface border border-border rounded-xl p-5 text-start min-w-70"
               >
@@ -53,7 +56,7 @@ export default function LandingPage() {
                 <p className="text-sm text-text-muted leading-relaxed">
                   {f.description}
                 </p>
-              </div>
+              </motion.div>
             );
           })}
         </div>

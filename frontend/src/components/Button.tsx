@@ -1,6 +1,9 @@
-import { type ButtonHTMLAttributes, type ReactNode } from "react";
+import { type ReactNode } from "react";
+import { motion, type HTMLMotionProps } from "framer-motion";
+import { fade } from "../motion/variants";
+import { hoverScale, tapScale } from "../motion/value-presets";
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps extends HTMLMotionProps<"button"> {
   outlined?: boolean;
   children: ReactNode;
 }
@@ -17,11 +20,14 @@ export default function Button({
   const outlinedClasses =
     "bg-surface border border-border text-text hover: bg-bg";
   return (
-    <button
+    <motion.button
+      whileHover={hoverScale}
+      whileTap={tapScale}
+      variants={fade()}
       className={`${baseClasses} ${outlined ? outlinedClasses : filledClasses} ${className}`}
       {...props}
     >
       {children}
-    </button>
+    </motion.button>
   );
 }

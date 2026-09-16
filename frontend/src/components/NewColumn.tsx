@@ -2,6 +2,8 @@ import { Check, X } from "lucide-react";
 import { useRef, useState, type MouseEvent } from "react";
 import useCreateColumn from "../hooks/useCreateColumn";
 import { useParams } from "react-router";
+import { motion } from "framer-motion";
+import { fade } from "../motion/variants";
 
 export default function NewColumn() {
   const { boardId } = useParams();
@@ -26,7 +28,8 @@ export default function NewColumn() {
   }
 
   return (
-    <div
+    <motion.div
+      variants={fade()}
       onClick={() => setIsAddingNewColumn(true)}
       className="rounded-3xl border border-border hover:border-primary items-start justify-center flex gap-2 py-2 px-4 cursor-pointer shrink-0 lg:w-80 lg:p-3 lg:rounded-xl "
     >
@@ -46,6 +49,6 @@ export default function NewColumn() {
       ) : (
         <button>+ Add</button>
       )}
-    </div>
+    </motion.div>
   );
 }

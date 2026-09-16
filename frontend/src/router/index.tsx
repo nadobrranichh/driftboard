@@ -3,10 +3,8 @@ import RootLayout from "../pages/RootLayout";
 import AuthPage from "../pages/AuthPage";
 import HomePage from "../pages/HomePage";
 import BoardPage from "../pages/BoardPage";
-import TaskDetail from "../components/TaskDetail";
 import NotFoundPage from "../pages/NotFoundPage";
 import LandingPage from "../pages/LandingPage";
-import BoardSettings from "../components/BoardSettings";
 import ProtectedRoute from "../pages/ProtectedRoute";
 
 const router = createBrowserRouter([
@@ -22,10 +20,6 @@ const router = createBrowserRouter([
           {
             path: "board/:boardId",
             element: <BoardPage />,
-            children: [
-              { path: "task/:taskId", element: <TaskDetail /> },
-              { path: "settings", element: <BoardSettings /> },
-            ],
           },
         ],
       },

@@ -1,4 +1,6 @@
 import type { InputHTMLAttributes, RefObject } from "react";
+import { motion } from "framer-motion";
+import { fade } from "../motion/variants";
 
 const textSizeClasses = {
   sm: "text-sm",
@@ -40,7 +42,7 @@ export default function InputGroup({
   ...props
 }: InputGroupProps) {
   return (
-    <div>
+    <motion.div variants={fade()}>
       <label htmlFor={name} className={textSizeClasses[textSize]}>
         {createLabelText(name)}
       </label>
@@ -64,6 +66,6 @@ export default function InputGroup({
           {...props}
         />
       )}
-    </div>
+    </motion.div>
   );
 }

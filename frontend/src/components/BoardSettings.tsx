@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type SyntheticEvent } from "react";
 import useGetBoard from "../hooks/useGetBoard";
 import Backdrop from "./Backdrop";
-import { Navigate, useNavigate, useParams } from "react-router";
+import { useParams } from "react-router";
 import InputGroup from "./InputGroup";
 import type { BoardType, User } from "../types";
 import { X } from "lucide-react";
@@ -11,11 +11,12 @@ import { arraysAreEqual } from "../utils/arrays";
 import useUpdateBoard from "../hooks/useUpdateBoard";
 import IconAndColorPicker from "./IconAndColorPicker";
 import AddMemberByEmail from "./AddMemberByEmail";
+import { motion } from "framer-motion";
+import { fade } from "../motion/variants";
 
-export default function BoardSettings() {
-  const navigate = useNavigate();
+export default function BoardSettings({ onClose }: { onClose: () => void }) {
   const { boardId } = useParams();
-  const { user, status } = useAuthStore();
+  const { user } = useAuthStore();
   const boardQuery = useGetBoard(Number(boardId));
   const updateBoard = useUpdateBoard(Number(boardId));
   const board = boardQuery.data ? boardQuery.data.board : null;
@@ -45,7 +46,8 @@ export default function BoardSettings() {
     }));
   }
 
-  function handleSubmitChanges() {
+  function handleSubmit(e: SyntheticEvent<HTMLFormElement>) {
+    e.preventDefault();
     if (!fieldsData || !board) return;
     if (fieldsData.title.trim().length < 1) {
       setInputErrors(["Title cannot be empty"]);
@@ -61,7 +63,7 @@ export default function BoardSettings() {
       ...data,
       ...(membersAreEqual && { members: undefined }),
     });
-    navigate("..");
+    onClose();
   }
 
   useEffect(() => {
@@ -70,33 +72,24 @@ export default function BoardSettings() {
 
   if (!board || !fieldsData) {
     return (
-      <Backdrop onClick={() => navigate("..")}>
+      <Backdrop onClick={onClose}>
         <p className="text-surface">Loading...</p>
       </Backdrop>
     );
   }
 
-  if (!user) {
-    if (status === "loading")
-      return (
-        <Backdrop onClick={() => navigate("..")}>
-          <p className="text-surface">Authenticating...</p>
-        </Backdrop>
-      );
-
-    return <Navigate to={"/auth"} />;
-  }
-
   return (
-    <Backdrop onClick={() => navigate("..")}>
-      <div
+    <Backdrop onClick={onClose}>
+      <motion.form
+        variants={fade({ withStagger: true })}
+        initial="hidden"
+        animate="visible"
+        exit="exit"
         className="bg-surface rounded-xl p-6 flex flex-col gap-3 relative"
         onClick={(e) => e.stopPropagation()}
+        onSubmit={handleSubmit}
       >
-        <button
-          onClick={() => navigate("..")}
-          className="absolute top-4 right-4"
-        >
+        <button onClick={onClose} className="absolute top-4 right-4">
           <X className="cursor-pointer" />
         </button>
         <h2 className="text-2xl text-center font-bold">Board Settings</h2>
@@ -137,14 +130,12 @@ export default function BoardSettings() {
           </div>
         )}
         <div className="grid grid-cols-2 gap-2">
-          <Button className="py-2" onClick={() => navigate("..")}>
+          <Button className="py-2" onClick={onClose} type="button">
             Cancel Changes
           </Button>
-          <Button className="py-2" onClick={handleSubmitChanges}>
-            Submit Changes
-          </Button>
+          <Button className="py-2">Submit Changes</Button>
         </div>
-      </div>
+      </motion.form>
     </Backdrop>
   );
 }

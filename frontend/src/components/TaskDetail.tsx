@@ -1,29 +1,36 @@
 import { Trash, X } from "lucide-react";
 import Button from "./Button";
 import Backdrop from "./Backdrop";
-import { useNavigate, useParams } from "react-router";
+import { useParams } from "react-router";
 import { formatDate } from "../utils/strings";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type SyntheticEvent } from "react";
 import type { ColumnType, TaskType, User } from "../types";
 import useGetBoard from "../hooks/useGetBoard";
 import { validateEditTaskFields } from "../utils/formFieldValidation";
 import useUpdateTask from "../hooks/useUpdateTask";
+import { motion } from "motion/react";
+import { fade } from "../motion/variants";
 
-export default function TaskDetail() {
-  const navigate = useNavigate();
-  const { boardId, taskId } = useParams();
+export default function TaskDetail({
+  taskId,
+  onClose,
+}: {
+  taskId: number;
+  onClose: () => void;
+}) {
+  const { boardId } = useParams();
   const updateTaskMutation = useUpdateTask(Number(boardId));
   const boardQuery = useGetBoard(Number(boardId));
   const board = boardQuery.data ? boardQuery.data.board : null;
-  const task = board
-    ? board.columns
-        .flatMap((col: ColumnType) => col.tasks)
-        .find((t: TaskType) => t.id === Number(taskId))
-    : null;
+  const task =
+    board &&
+    board.columns
+      .flatMap((col: ColumnType) => col.tasks)
+      .find((t: TaskType) => t.id === taskId);
   const taskColumn =
-    board && task
-      ? board.columns.find((col: ColumnType) => col.id === task.columnId)
-      : null;
+    board &&
+    task &&
+    board.columns.find((col: ColumnType) => col.id === task.columnId);
 
   const [isEditing, setIsEditing] = useState(false);
   const [inputErrors, setInputErrors] = useState<string[]>([]);
@@ -31,6 +38,7 @@ export default function TaskDetail() {
 
   useEffect(() => {
     setFieldsData(task);
+    console.log(task);
   }, [task]);
 
   const toggleIsEditing = () => setIsEditing((prev) => !prev);
@@ -39,7 +47,8 @@ export default function TaskDetail() {
     setFieldsData((prev) => ({ ...prev, [field]: value }));
   }
 
-  function handleSubmit() {
+  function handleSubmit(e: SyntheticEvent<HTMLFormElement>) {
+    e.preventDefault();
     if (!fieldsData || !task) return;
     const { fields, errors } = validateEditTaskFields(fieldsData);
 
@@ -69,36 +78,43 @@ export default function TaskDetail() {
 
   if (!task || !board || !fieldsData)
     return (
-      <Backdrop onClick={() => navigate("..")}>
+      <Backdrop onClick={onClose}>
         <p className="text-surface">Loading...</p>
       </Backdrop>
     );
 
   return (
-    <Backdrop onClick={() => navigate("..")}>
-      <div
+    <Backdrop onClick={onClose}>
+      <motion.form
+        variants={fade({ withStagger: true })}
+        initial="hidden"
+        animate="visible"
+        exit="exit"
+        onSubmit={handleSubmit}
         onClick={(e) => e.stopPropagation()}
-        className="w-9/10 md:w-1/2 bg-surface rounded-xl p-6 flex flex-col gap-3"
+        className="w-9/10 md:w-120 bg-surface rounded-xl p-6 flex flex-col gap-3"
       >
-        <div className="flex justify-between mb-2">
+        <motion.div variants={fade()} className="flex justify-between mb-2">
           <p className="text-text-muted">Task #{task.id}</p>
           <div className="flex gap-5">
             <Trash className="cursor-pointer" />
-            <X className="cursor-pointer" onClick={() => navigate("..")} />
+            <X className="cursor-pointer" onClick={onClose} />
           </div>
-        </div>
-        {isEditing ? (
-          <input
-            name="title"
-            className="px-1 text-2xl font-semibold rounded-xl border border-text"
-            value={fieldsData.title}
-            onChange={(e) => updateField("title", e.target.value)}
-          />
-        ) : (
-          <h2 className="text-2xl font-semibold">{fieldsData.title}</h2>
-        )}
+        </motion.div>
+        <motion.div variants={fade()}>
+          {isEditing ? (
+            <input
+              name="title"
+              className="px-1 text-2xl font-semibold rounded-xl border border-text"
+              value={fieldsData.title}
+              onChange={(e) => updateField("title", e.target.value)}
+            />
+          ) : (
+            <h2 className="text-2xl font-semibold">{fieldsData.title}</h2>
+          )}
+        </motion.div>
 
-        <div className="flex justify-between">
+        <motion.div variants={fade()} className="flex justify-between">
           <p className="text-text-muted text-md">Assignee</p>
           {isEditing ? (
             <select
@@ -125,9 +141,9 @@ export default function TaskDetail() {
                 ?.name ?? "Not assigned"}
             </p>
           )}
-        </div>
+        </motion.div>
 
-        <div className="flex justify-between">
+        <motion.div variants={fade()} className="flex justify-between">
           <p className="text-text-muted text-md">Due date</p>
           {isEditing ? (
             <input
@@ -145,9 +161,9 @@ export default function TaskDetail() {
                 : "No deadline set"}
             </p>
           )}
-        </div>
+        </motion.div>
 
-        <div className="flex justify-between">
+        <motion.div variants={fade()} className="flex justify-between">
           <p className="text-text-muted text-md">Column</p>
           {isEditing ? (
             <select
@@ -162,10 +178,10 @@ export default function TaskDetail() {
               ))}
             </select>
           ) : (
-            <p>{taskColumn?.title}</p>
+            <p>{taskColumn.title}</p>
           )}
-        </div>
-        <div>
+        </motion.div>
+        <motion.div variants={fade()}>
           <p className="text-text-muted text-md">Description</p>
           {isEditing ? (
             <textarea
@@ -178,7 +194,7 @@ export default function TaskDetail() {
           ) : (
             <p className="text-balance">{fieldsData?.description}</p>
           )}
-        </div>
+        </motion.div>
         {inputErrors.length > 0 && (
           <div>
             {inputErrors.map((err) => (
@@ -192,6 +208,7 @@ export default function TaskDetail() {
           <div className="grid grid-cols-2 gap-2">
             <Button
               className="p-2"
+              type="button"
               onClick={() => {
                 setFieldsData({ ...task });
                 toggleIsEditing();
@@ -199,16 +216,14 @@ export default function TaskDetail() {
             >
               Cancel Edit
             </Button>
-            <Button className="p-2" onClick={handleSubmit}>
-              Submit Edit
-            </Button>
+            <Button className="p-2">Submit Edit</Button>
           </div>
         ) : (
-          <Button className="p-2" onClick={toggleIsEditing}>
+          <Button className="p-2" type="button" onClick={toggleIsEditing}>
             Edit
           </Button>
         )}
-      </div>
+      </motion.form>
     </Backdrop>
   );
 }

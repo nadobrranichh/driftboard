@@ -35,3 +35,5 @@ export type BoardType = {
   columns?: ColumnType[];
   members?: User[];
 };
+
+export type OpenForm = "new-task" | "settings" | "task-detail" | null;
