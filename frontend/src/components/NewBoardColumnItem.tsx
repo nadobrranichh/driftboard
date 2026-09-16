@@ -1,5 +1,7 @@
 import { Check, Pencil, X } from "lucide-react";
 import { useState } from "react";
+import { motion } from "framer-motion";
+import { fade } from "../motion/variants";
 
 export default function NewBoardColumnItem({
   name,
@@ -14,7 +16,10 @@ export default function NewBoardColumnItem({
   const [nameBeforeSubmit, setNameBeforeSubmit] = useState(name);
 
   return (
-    <div className="bg-text rounded-md flex justify-between items-center p-1.5">
+    <motion.div
+      variants={fade()}
+      className="bg-text rounded-md flex justify-between items-center p-1.5"
+    >
       {isEditing ? (
         <input
           value={nameBeforeSubmit}
@@ -47,6 +52,6 @@ export default function NewBoardColumnItem({
           onClick={deleteColumn}
         />
       </div>
-    </div>
+    </motion.div>
   );
 }

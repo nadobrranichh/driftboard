@@ -15,5 +15,13 @@ export function fade({ withStagger = false, yStart = 30 } = {}): Variants {
         ...(withStagger && { delayChildren: stagger(0.1) }),
       },
     },
+    exit: {
+      opacity: 0,
+      y: -yStart,
+      transition: {
+        duration: 0.5,
+        ease: "easeOut",
+      },
+    },
   };
 }

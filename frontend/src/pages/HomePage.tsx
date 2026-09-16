@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getBoards } from "../http/boards";
 import type { BoardType } from "../types";
 import { isSingular } from "../utils/strings";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { fade } from "../motion/variants";
 import { hoverScale, tapScale } from "../motion/value-presets";
 
@@ -18,7 +18,9 @@ export default function HomePage() {
 
   return (
     <main>
-      {isFormOpen && <NewBoardForm onClose={() => setIsFormOpen(false)} />}
+      <AnimatePresence>
+        {isFormOpen && <NewBoardForm onClose={() => setIsFormOpen(false)} />}
+      </AnimatePresence>
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-3xl font-semibold">Your boards</h2>
