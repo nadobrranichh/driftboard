@@ -8,6 +8,8 @@ import type { ColumnType, TaskType, User } from "../types";
 import useGetBoard from "../hooks/useGetBoard";
 import { validateEditTaskFields } from "../utils/formFieldValidation";
 import useUpdateTask from "../hooks/useUpdateTask";
+import { motion } from "motion/react";
+import { fade } from "../motion/variants";
 
 export default function TaskDetail({
   taskId,
@@ -83,30 +85,36 @@ export default function TaskDetail({
 
   return (
     <Backdrop onClick={onClose}>
-      <form
+      <motion.form
+        variants={fade({ withStagger: true })}
+        initial="hidden"
+        animate="visible"
+        exit="exit"
         onSubmit={handleSubmit}
         onClick={(e) => e.stopPropagation()}
         className="w-9/10 md:w-120 bg-surface rounded-xl p-6 flex flex-col gap-3"
       >
-        <div className="flex justify-between mb-2">
+        <motion.div variants={fade()} className="flex justify-between mb-2">
           <p className="text-text-muted">Task #{task.id}</p>
           <div className="flex gap-5">
             <Trash className="cursor-pointer" />
             <X className="cursor-pointer" onClick={onClose} />
           </div>
-        </div>
-        {isEditing ? (
-          <input
-            name="title"
-            className="px-1 text-2xl font-semibold rounded-xl border border-text"
-            value={fieldsData.title}
-            onChange={(e) => updateField("title", e.target.value)}
-          />
-        ) : (
-          <h2 className="text-2xl font-semibold">{fieldsData.title}</h2>
-        )}
+        </motion.div>
+        <motion.div variants={fade()}>
+          {isEditing ? (
+            <input
+              name="title"
+              className="px-1 text-2xl font-semibold rounded-xl border border-text"
+              value={fieldsData.title}
+              onChange={(e) => updateField("title", e.target.value)}
+            />
+          ) : (
+            <h2 className="text-2xl font-semibold">{fieldsData.title}</h2>
+          )}
+        </motion.div>
 
-        <div className="flex justify-between">
+        <motion.div variants={fade()} className="flex justify-between">
           <p className="text-text-muted text-md">Assignee</p>
           {isEditing ? (
             <select
@@ -133,9 +141,9 @@ export default function TaskDetail({
                 ?.name ?? "Not assigned"}
             </p>
           )}
-        </div>
+        </motion.div>
 
-        <div className="flex justify-between">
+        <motion.div variants={fade()} className="flex justify-between">
           <p className="text-text-muted text-md">Due date</p>
           {isEditing ? (
             <input
@@ -153,9 +161,9 @@ export default function TaskDetail({
                 : "No deadline set"}
             </p>
           )}
-        </div>
+        </motion.div>
 
-        <div className="flex justify-between">
+        <motion.div variants={fade()} className="flex justify-between">
           <p className="text-text-muted text-md">Column</p>
           {isEditing ? (
             <select
@@ -172,8 +180,8 @@ export default function TaskDetail({
           ) : (
             <p>{taskColumn.title}</p>
           )}
-        </div>
-        <div>
+        </motion.div>
+        <motion.div variants={fade()}>
           <p className="text-text-muted text-md">Description</p>
           {isEditing ? (
             <textarea
@@ -186,7 +194,7 @@ export default function TaskDetail({
           ) : (
             <p className="text-balance">{fieldsData?.description}</p>
           )}
-        </div>
+        </motion.div>
         {inputErrors.length > 0 && (
           <div>
             {inputErrors.map((err) => (
@@ -215,7 +223,7 @@ export default function TaskDetail({
             Edit
           </Button>
         )}
-      </form>
+      </motion.form>
     </Backdrop>
   );
 }

@@ -1,7 +1,7 @@
 import { ArrowLeft, Settings } from "lucide-react";
 import { useRef, useState } from "react";
 import NewTaskForm from "../components/NewTaskForm";
-import { Outlet, useLocation, useNavigate, useParams } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
 import type { BoardType, ColumnType, OpenForm, TaskType } from "../types";
 import ColumnPill from "../components/ColumnPill";
 import useGetBoard from "../hooks/useGetBoard";
@@ -25,7 +25,7 @@ import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import useUpdateTask from "../hooks/useUpdateTask";
 import { findColumnId } from "../utils/tasks";
 import { moveTaskInCache, syncTaskPosition } from "../http/boardCacheUpdates";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { fade } from "../motion/variants";
 import BoardSettings from "../components/BoardSettings";
 import TaskDetail from "../components/TaskDetail";
@@ -105,26 +105,27 @@ export default function BoardPage() {
 
   return (
     <main className="flex flex-col p-1-5">
-      {openForm === "settings" && (
-        <BoardSettings onClose={() => setOpenForm(null)} />
-      )}
-      {openForm === "new-task" && (
-        <NewTaskForm
-          columnId={Number(activeColumnId)}
-          onClose={() => setOpenForm(null)}
-        />
-      )}
-      {openForm === "task-detail" && selectedTaskId && (
-        <TaskDetail
-          taskId={selectedTaskId}
-          onClose={() => {
-            setOpenForm(null);
-            setSelectedTaskId(null);
-          }}
-        />
-      )}
+      <AnimatePresence>
+        {openForm === "settings" && (
+          <BoardSettings onClose={() => setOpenForm(null)} />
+        )}
+        {openForm === "new-task" && (
+          <NewTaskForm
+            columnId={Number(activeColumnId)}
+            onClose={() => setOpenForm(null)}
+          />
+        )}
+        {openForm === "task-detail" && selectedTaskId && (
+          <TaskDetail
+            taskId={selectedTaskId}
+            onClose={() => {
+              setOpenForm(null);
+              setSelectedTaskId(null);
+            }}
+          />
+        )}
+      </AnimatePresence>
 
-      <Outlet />
       <div className=" flex flex-col justify-start items-center gap-1 -mt-3">
         <div
           className={`h-full p-1.5 rounded-lg`}

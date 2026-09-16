@@ -11,6 +11,8 @@ import { arraysAreEqual } from "../utils/arrays";
 import useUpdateBoard from "../hooks/useUpdateBoard";
 import IconAndColorPicker from "./IconAndColorPicker";
 import AddMemberByEmail from "./AddMemberByEmail";
+import { motion } from "framer-motion";
+import { fade } from "../motion/variants";
 
 export default function BoardSettings({ onClose }: { onClose: () => void }) {
   const { boardId } = useParams();
@@ -78,7 +80,11 @@ export default function BoardSettings({ onClose }: { onClose: () => void }) {
 
   return (
     <Backdrop onClick={onClose}>
-      <form
+      <motion.form
+        variants={fade({ withStagger: true })}
+        initial="hidden"
+        animate="visible"
+        exit="exit"
         className="bg-surface rounded-xl p-6 flex flex-col gap-3 relative"
         onClick={(e) => e.stopPropagation()}
         onSubmit={handleSubmit}
@@ -129,7 +135,7 @@ export default function BoardSettings({ onClose }: { onClose: () => void }) {
           </Button>
           <Button className="py-2">Submit Changes</Button>
         </div>
-      </form>
+      </motion.form>
     </Backdrop>
   );
 }
