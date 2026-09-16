@@ -11,9 +11,11 @@ import { fade } from "../motion/variants";
 export default function Column({
   data,
   onNewTask,
+  onSelectTask,
 }: {
   data: ColumnType;
   onNewTask: () => void;
+  onSelectTask: (taskId: number) => void;
 }) {
   const { setNodeRef } = useDroppable({ id: `${data.id}-column` });
   return (
@@ -23,16 +25,13 @@ export default function Column({
       className="bg-border lg:w-80 p-3 rounded-xl shrink-0"
     >
       <p className="text-center mb-3 font-semibold">{data.title}</p>
-      <div
-        // variants={fade({ withStagger: true })}
-        className="flex flex-col gap-3"
-      >
+      <div className="flex flex-col gap-3">
         <SortableContext
           items={data.tasks?.map((t) => `${t.id}-task`) || []}
           strategy={verticalListSortingStrategy}
         >
           {data.tasks?.map((task: TaskType) => (
-            <Task data={task} key={task.id} />
+            <Task data={task} key={task.id} onSelectTask={onSelectTask} />
           ))}
         </SortableContext>
         <div

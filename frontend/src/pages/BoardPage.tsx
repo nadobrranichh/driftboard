@@ -2,7 +2,7 @@ import { ArrowLeft, Settings } from "lucide-react";
 import { useRef, useState } from "react";
 import NewTaskForm from "../components/NewTaskForm";
 import { Outlet, useLocation, useNavigate, useParams } from "react-router";
-import type { BoardType, ColumnType, TaskType } from "../types";
+import type { BoardType, ColumnType, OpenForm, TaskType } from "../types";
 import ColumnPill from "../components/ColumnPill";
 import useGetBoard from "../hooks/useGetBoard";
 import { boardColorRamps, boardIcons } from "../lists/boardIconsList";
@@ -27,6 +27,8 @@ import { findColumnId } from "../utils/tasks";
 import { moveTaskInCache, syncTaskPosition } from "../http/boardCacheUpdates";
 import { motion } from "framer-motion";
 import { fade } from "../motion/variants";
+import BoardSettings from "../components/BoardSettings";
+import TaskDetail from "../components/TaskDetail";
 
 export default function BoardPage() {
   const { isLg } = useBreakpoints();
@@ -39,10 +41,11 @@ export default function BoardPage() {
     ? boardQuery.data.board
     : null;
   const startDraggingRef = useRef<Partial<TaskType>>(null);
-  const [isNewTaskFormOpen, setIsNewTaskFormOpen] = useState(false);
+  const [openForm, setOpenForm] = useState<OpenForm>(null);
   const [activeColumnId, setActiveColumnId] = useState<UniqueIdentifier | null>(
     null,
   );
+  const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
   const activeColumn =
     (board &&
       board.columns &&
@@ -59,8 +62,13 @@ export default function BoardPage() {
   );
 
   function handleAddingNewTask(columnId: UniqueIdentifier) {
-    setIsNewTaskFormOpen(true);
+    setOpenForm("new-task");
     setActiveColumnId(columnId);
+  }
+
+  function handleSelectTask(taskId: number) {
+    setSelectedTaskId(taskId);
+    setOpenForm("task-detail");
   }
 
   function handleDragStart(e: DragStartEvent) {
@@ -97,12 +105,25 @@ export default function BoardPage() {
 
   return (
     <main className="flex flex-col p-1-5">
-      {isNewTaskFormOpen && activeColumnId && (
+      {openForm === "settings" && (
+        <BoardSettings onClose={() => setOpenForm(null)} />
+      )}
+      {openForm === "new-task" && (
         <NewTaskForm
           columnId={Number(activeColumnId)}
-          onClose={() => setIsNewTaskFormOpen(false)}
+          onClose={() => setOpenForm(null)}
         />
       )}
+      {openForm === "task-detail" && selectedTaskId && (
+        <TaskDetail
+          taskId={selectedTaskId}
+          onClose={() => {
+            setOpenForm(null);
+            setSelectedTaskId(null);
+          }}
+        />
+      )}
+
       <Outlet />
       <div className=" flex flex-col justify-start items-center gap-1 -mt-3">
         <div
@@ -120,7 +141,7 @@ export default function BoardPage() {
         </button>
         <button
           className="absolute right-3 cursor-pointer"
-          onClick={() => navigate("settings")}
+          onClick={() => setOpenForm("settings")}
         >
           <Settings className="text-text-muted" />
         </button>
@@ -147,6 +168,7 @@ export default function BoardPage() {
                   data={col}
                   key={col.id}
                   onNewTask={() => handleAddingNewTask(col.id)}
+                  onSelectTask={handleSelectTask}
                 />
               ))}
             <NewColumn />
@@ -171,7 +193,8 @@ export default function BoardPage() {
           {activeColumn ? (
             <Column
               data={activeColumn}
-              onNewTask={() => setIsNewTaskFormOpen(true)}
+              onNewTask={() => setOpenForm("new-task")}
+              onSelectTask={handleSelectTask}
             />
           ) : (
             <div className="flex-1 flex items-center justify-center">
