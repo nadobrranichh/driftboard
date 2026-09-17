@@ -71,7 +71,6 @@ export function moveTaskInCache({
                   overTaskIndex === -1
                 )
                   return resultColumn;
-
                 //over the first task
                 if (overTaskIndex === 0)
                   position =
@@ -109,34 +108,31 @@ type useUpdateTaskMutateFn = ReturnType<typeof useUpdateTask>["mutate"];
 export function syncTaskPosition({
   oldColumnId,
   active,
-  board,
+  boardId,
   mutate,
 }: {
   oldColumnId: number;
   active: Active;
-  board: BoardType;
+  boardId: number;
   mutate: useUpdateTaskMutateFn;
 }) {
   const activeId = parseInt(active.id.toString());
-
-  const activeColumnId = findColumnId(board, active.id);
-  if (!activeColumnId) return;
-
   const finalBoard = queryClient.getQueryData<{ board: BoardType }>([
     "boards",
-    board.id,
+    boardId,
   ])?.board;
-
   if (!finalBoard?.columns) return;
-  for (const col of finalBoard.columns) {
-    const finalTask = col.tasks?.find((t) => t.id === activeId);
-    if (finalTask) {
-      if (oldColumnId === activeColumnId) return;
-      mutate({
-        id: activeId,
-        newFields: { columnId: activeColumnId },
-        oldColumnId,
-      });
-    }
-  }
+
+  const activeColumnId = findColumnId(finalBoard, active.id);
+  if (!activeColumnId) return;
+
+  const column = finalBoard.columns.find((col) => col.id === activeColumnId);
+  const task = column?.tasks?.find((t) => t.id === activeId);
+  if (!task) return;
+
+  mutate({
+    id: activeId,
+    newFields: { columnId: activeColumnId, position: task.position },
+    oldColumnId,
+  });
 }

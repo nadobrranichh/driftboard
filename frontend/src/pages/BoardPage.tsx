@@ -23,7 +23,7 @@ import {
 } from "@dnd-kit/core";
 import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import useUpdateTask from "../hooks/useUpdateTask";
-import { findColumnId } from "../utils/tasks";
+import { findColumnId, getColumn } from "../utils/tasks";
 import { moveTaskInCache, syncTaskPosition } from "../http/boardCacheUpdates";
 import { AnimatePresence, motion } from "framer-motion";
 import { fade } from "../motion/variants";
@@ -47,10 +47,9 @@ export default function BoardPage() {
   );
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
   const activeColumn =
-    (board &&
-      board.columns &&
-      board.columns.find((col: ColumnType) => col.id === activeColumnId)) ||
-    null;
+    board?.columns &&
+    activeColumnId &&
+    getColumn(board, parseInt(activeColumnId.toString()));
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -62,8 +61,8 @@ export default function BoardPage() {
   );
 
   function handleAddingNewTask(columnId: UniqueIdentifier) {
-    setOpenForm("new-task");
     setActiveColumnId(columnId);
+    setOpenForm("new-task");
   }
 
   function handleSelectTask(taskId: number) {
@@ -81,7 +80,6 @@ export default function BoardPage() {
   function handleDragOver(e: DragOverEvent) {
     const { active, over } = e;
     if (!active || !over || !board?.columns) return;
-
     moveTaskInCache({ board, active, over });
   }
 
@@ -91,7 +89,12 @@ export default function BoardPage() {
     const oldColumnId = startDraggingRef.current?.columnId;
     if (!oldColumnId) return;
 
-    syncTaskPosition({ oldColumnId, active, board, mutate: updateTask.mutate });
+    syncTaskPosition({
+      oldColumnId,
+      active,
+      boardId: board.id,
+      mutate: updateTask.mutate,
+    });
 
     startDraggingRef.current = null;
   }
