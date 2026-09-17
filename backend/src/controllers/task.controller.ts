@@ -2,6 +2,8 @@ import type { Request, Response } from "express";
 import prisma from "../config/db.js";
 import { checkIfIsMember } from "../util/boardMembership.js";
 
+const POSITION_DIFFERENCE = Math.pow(2, 15);
+
 function validateDate(dateStr: string) {
   const parsed = new Date(dateStr);
   if (!parsed) return "Invalid date";
@@ -55,7 +57,7 @@ export async function addTask(req: Request, res: Response) {
     orderBy: { position: "desc" },
   });
 
-  const position = lastTask ? lastTask.position + 1 : 1;
+  const position = lastTask ? lastTask.position + POSITION_DIFFERENCE : 0;
   try {
     const task = await prisma.task.create({
       data: {
@@ -139,7 +141,7 @@ export async function updateTask(req: Request, res: Response) {
         where: { columnId },
         orderBy: { position: "desc" },
       });
-      newPosition = lastTask ? lastTask.position + 1 : 1;
+      newPosition = lastTask ? lastTask.position + POSITION_DIFFERENCE : 0;
     }
 
     data.columnId = columnId;

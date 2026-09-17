@@ -1,5 +1,5 @@
 import type { UniqueIdentifier } from "@dnd-kit/core";
-import type { BoardType, TaskType } from "../types";
+import type { BoardType, ColumnType, TaskType } from "../types";
 
 export function findColumnId(
   board: BoardType | null,
@@ -15,4 +15,21 @@ export function findColumnId(
       return column.id;
   }
   return null;
+}
+
+export function getColumn(
+  board: BoardType,
+  columnId: number,
+): ColumnType | null {
+  return board.columns?.find((col) => col.id === columnId) || null;
+}
+
+export function findFirstTask(column: ColumnType) {
+  if (!column.tasks || column.tasks.length === 0) return null;
+  return (
+    column.tasks.reduce(
+      (prev, cur) => (cur.position < prev.position ? cur : prev),
+      column.tasks[0],
+    ) || null
+  );
 }

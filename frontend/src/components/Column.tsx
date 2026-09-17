@@ -18,6 +18,7 @@ export default function Column({
   onSelectTask: (taskId: number) => void;
 }) {
   const { setNodeRef } = useDroppable({ id: `${data.id}-column` });
+  const sortedTasks = data.tasks?.toSorted((a, b) => a.position - b.position);
   return (
     <motion.div
       ref={setNodeRef}
@@ -30,7 +31,7 @@ export default function Column({
           items={data.tasks?.map((t) => `${t.id}-task`) || []}
           strategy={verticalListSortingStrategy}
         >
-          {data.tasks?.map((task: TaskType) => (
+          {sortedTasks?.map((task: TaskType) => (
             <Task data={task} key={task.id} onSelectTask={onSelectTask} />
           ))}
         </SortableContext>
