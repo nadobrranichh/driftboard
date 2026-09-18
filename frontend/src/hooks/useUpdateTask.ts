@@ -9,13 +9,17 @@ export default function useUpdateTask(boardId: number) {
       id,
       newFields,
       oldColumnId,
+      rebalance = false,
     }: {
       id: number;
       newFields: Partial<TaskType>;
       oldColumnId?: number;
-    }) => updateTask({ id, newFields }),
+      rebalance?: boolean;
+    }) => updateTask({ id, newFields, rebalance }),
     onSuccess: (data, variables) => {
       const updatedTask: TaskType = data.task;
+      const updatedTasks: TaskType[] = data.tasks;
+
       let { oldColumnId } = variables;
       if (!oldColumnId) oldColumnId = updatedTask.columnId;
 
@@ -39,7 +43,8 @@ export default function useUpdateTask(boardId: number) {
 
           const targetCol = columns.find((c) => c.id === updatedTask.columnId);
           if (targetCol) {
-            targetCol.tasks = [...(targetCol.tasks || []), updatedTask];
+            if (updatedTasks) targetCol.tasks = updatedTasks;
+            else targetCol.tasks = [...(targetCol.tasks || []), updatedTask];
           }
 
           return { board: { ...board, columns } };

@@ -4,6 +4,7 @@ import { queryClient } from ".";
 import type { BoardType } from "../types";
 import type useUpdateTask from "../hooks/useUpdateTask";
 
+const MIN_POSITION_DIFFERENCE = 2;
 const POSITION_DIFFERENCE = Math.pow(2, 15);
 
 export function moveTaskInCache({
@@ -127,12 +128,39 @@ export function syncTaskPosition({
   if (!activeColumnId) return;
 
   const column = finalBoard.columns.find((col) => col.id === activeColumnId);
-  const task = column?.tasks?.find((t) => t.id === activeId);
-  if (!task) return;
+  const sortedTasks = column?.tasks?.toSorted(
+    (a, b) => a.position - b.position,
+  );
+  if (!sortedTasks) return;
+
+  const activeTaskIndex = sortedTasks.findIndex((t) => t.id === activeId);
+  if (activeTaskIndex === -1) return;
+
+  const activeTask = sortedTasks[activeTaskIndex];
+  const beforeTask = sortedTasks[activeTaskIndex - 1];
+  const afterTask = sortedTasks[activeTaskIndex + 1];
+
+  let rebalance = false;
+  if (
+    beforeTask &&
+    Math.abs(beforeTask.position - activeTask.position) <=
+      MIN_POSITION_DIFFERENCE
+  )
+    rebalance = true;
+  if (
+    afterTask &&
+    Math.abs(afterTask.position - activeTask.position) <=
+      MIN_POSITION_DIFFERENCE
+  )
+    rebalance = true;
 
   mutate({
     id: activeId,
-    newFields: { columnId: activeColumnId, position: task.position },
+    newFields: {
+      columnId: activeColumnId,
+      position: sortedTasks[activeTaskIndex].position,
+    },
     oldColumnId,
+    rebalance,
   });
 }
