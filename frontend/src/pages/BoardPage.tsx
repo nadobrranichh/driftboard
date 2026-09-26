@@ -1,5 +1,5 @@
 import { ArrowLeft, Settings } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import NewTaskForm from "../components/NewTaskForm";
 import { useLocation, useNavigate, useParams } from "react-router";
 import type { BoardType, ColumnType, OpenForm, TaskType } from "../types";
@@ -29,8 +29,11 @@ import { AnimatePresence, motion } from "framer-motion";
 import { fade } from "../motion/variants";
 import BoardSettings from "../components/BoardSettings";
 import TaskDetail from "../components/TaskDetail";
+import { useAuthStore } from "../store/useAuthStore";
+import { handleBoardUpdated, handleRemovedFromBoard } from "../socket/board";
 
 export default function BoardPage() {
+  const { socket } = useAuthStore();
   const { isLg } = useBreakpoints();
   const navigate = useNavigate();
   const { boardId } = useParams();
@@ -99,6 +102,28 @@ export default function BoardPage() {
     startDraggingRef.current = null;
   }
 
+  useEffect(() => {
+    if (!socket) return;
+
+    function onRemovedFromBoard({
+      boardId: removedBoardId,
+    }: {
+      boardId: number;
+    }) {
+      handleRemovedFromBoard({ boardId: removedBoardId });
+      if (removedBoardId === Number(boardId)) {
+        navigate("/home");
+      }
+    }
+
+    socket.on("board-updated", handleBoardUpdated);
+    socket.on("removed-from-board", onRemovedFromBoard);
+
+    return () => {
+      socket.off("board-updated", handleBoardUpdated);
+      socket.off("removed-from-board", onRemovedFromBoard);
+    };
+  }, [socket]);
   const Icon = board ? boardIcons[board.icon] : null;
   const colors = board
     ? boardColorRamps[board.iconColor as keyof typeof boardColorRamps]

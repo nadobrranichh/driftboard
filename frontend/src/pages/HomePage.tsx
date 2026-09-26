@@ -1,7 +1,7 @@
 import { Plus } from "lucide-react";
 import Board from "../components/Board";
 import NewBoardForm from "../components/NewBoardForm";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getBoards } from "../http/boards";
 import type { BoardType } from "../types";
@@ -9,12 +9,32 @@ import { isSingular } from "../utils/strings";
 import { AnimatePresence, motion } from "framer-motion";
 import { fade } from "../motion/variants";
 import { hoverScale, tapScale } from "../motion/value-presets";
+import { useAuthStore } from "../store/useAuthStore";
+import {
+  handleAddedToBoard,
+  handleBoardUpdated,
+  handleRemovedFromBoard,
+} from "../socket/board";
 
 export default function HomePage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const { socket } = useAuthStore();
 
   const boardsQuery = useQuery({ queryKey: ["boards"], queryFn: getBoards });
   const boards = boardsQuery.data ? boardsQuery.data.boards : [];
+
+  useEffect(() => {
+    if (!socket) return;
+    socket.on("removed-from-board", handleRemovedFromBoard);
+    socket.on("added-to-board", handleAddedToBoard);
+    socket.on("board-updated", handleBoardUpdated);
+
+    return () => {
+      socket.off("removed-from-board", handleRemovedFromBoard);
+      socket.off("added-to-board", handleAddedToBoard);
+      socket.off("board-updated", handleBoardUpdated);
+    };
+  }, [socket]);
 
   return (
     <main>
