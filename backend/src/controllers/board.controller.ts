@@ -126,6 +126,10 @@ export async function updateBoard(req: Request, res: Response) {
         await tx.boardMember.deleteMany({
           where: { boardId, userId: { in: memberIdsToRemove } },
         });
+        await tx.task.updateMany({
+          data: { assigneeId: null },
+          where: { column: { boardId }, assigneeId: { in: memberIdsToRemove } },
+        });
       }
 
       if (memberIdsToAdd.length > 0)
