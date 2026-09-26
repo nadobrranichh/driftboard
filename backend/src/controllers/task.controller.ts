@@ -2,6 +2,8 @@ import type { Request, Response } from "express";
 import prisma from "../config/db.js";
 import { checkIfIsMember } from "../util/boardMembership.js";
 
+const POSITION_DIFFERENCE = Math.pow(2, 15);
+
 function validateDate(dateStr: string) {
   const parsed = new Date(dateStr);
   if (!parsed) return "Invalid date";
@@ -55,7 +57,7 @@ export async function addTask(req: Request, res: Response) {
     orderBy: { position: "desc" },
   });
 
-  const position = lastTask ? lastTask.position + 1 : 1;
+  const position = lastTask ? lastTask.position + POSITION_DIFFERENCE : 0;
   try {
     const task = await prisma.task.create({
       data: {
@@ -88,7 +90,7 @@ export async function updateTask(req: Request, res: Response) {
   if (!task) return res.status(404).json({ error: "Task does not exist" });
 
   const { title, description, dueDate, assigneeId, columnId, position } =
-    req.body;
+    req.body.task;
   if (
     !title &&
     !description &&
@@ -139,7 +141,7 @@ export async function updateTask(req: Request, res: Response) {
         where: { columnId },
         orderBy: { position: "desc" },
       });
-      newPosition = lastTask ? lastTask.position + 1 : 1;
+      newPosition = lastTask ? lastTask.position + POSITION_DIFFERENCE : 0;
     }
 
     data.columnId = columnId;
@@ -156,7 +158,25 @@ export async function updateTask(req: Request, res: Response) {
       where: { id: taskId },
       data,
     });
-    return res.json({ task: updated });
+    const rebalance = req.body.rebalance;
+    if (rebalance) {
+      const tasks = await prisma.task.findMany({
+        where: { columnId },
+        orderBy: { position: "asc" },
+      });
+      await prisma.$transaction(async (tx) => {
+        for (const [i, task] of tasks.entries()) {
+          await tx.task.update({
+            where: { id: task.id },
+            data: { position: POSITION_DIFFERENCE * i },
+          });
+          if (task.id === updated.id)
+            updated.position = POSITION_DIFFERENCE * i;
+          task.position = POSITION_DIFFERENCE * i;
+        }
+      });
+      return res.json({ task: updated, tasks });
+    } else return res.json({ task: updated });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Failed to update task" });

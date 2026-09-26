@@ -13,13 +13,15 @@ export async function createTask(task: Omit<TaskType, "id" | "position">) {
 export async function updateTask({
   id,
   newFields,
+  rebalance,
 }: {
   id: number;
   newFields: Partial<TaskType>;
+  rebalance?: boolean;
 }) {
   const updatedTask = await sendRequest(
     `/tasks/${id}`,
-    requestInit("PATCH", newFields),
+    requestInit("PATCH", { task: newFields, rebalance }),
   );
   if (updatedTask.error) throw updatedTask;
   return updatedTask;

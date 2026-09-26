@@ -1,8 +1,11 @@
 import type { Active, Over } from "@dnd-kit/core";
-import { findColumnId } from "../utils/tasks";
+import { findColumnId, findFirstTask } from "../utils/tasks";
 import { queryClient } from ".";
 import type { BoardType } from "../types";
 import type useUpdateTask from "../hooks/useUpdateTask";
+
+const MIN_POSITION_DIFFERENCE = 2;
+const POSITION_DIFFERENCE = Math.pow(2, 15);
 
 export function moveTaskInCache({
   board,
@@ -16,11 +19,12 @@ export function moveTaskInCache({
   const activeId = parseInt(active.id.toString());
   const overId = parseInt(over.id.toString());
 
+  if (activeId === overId) return;
+
   const activeColumnId = findColumnId(board, active.id);
   const overColumnId = findColumnId(board, over.id);
 
   if (!activeColumnId || !overColumnId) return;
-  if (activeColumnId === overColumnId) return;
 
   queryClient.setQueryData(
     ["boards", board.id],
@@ -36,28 +40,63 @@ export function moveTaskInCache({
         board: {
           ...board,
           columns: board.columns?.map((col) => {
-            if (col.id === activeColumnId)
-              return {
-                ...col,
-                tasks: col.tasks?.filter((t) => t.id !== activeId),
+            let resultColumn = col;
+            if (resultColumn.id === activeColumnId) {
+              // removing task from the column where it was
+              resultColumn = {
+                ...resultColumn,
+                tasks: resultColumn.tasks?.filter((t) => t.id !== activeId),
               };
-            if (col.id === overColumnId) {
-              if (overId === overColumnId)
-                return { ...col, tasks: [...(col.tasks || []), activeTask] };
+            }
 
-              const overTaskIndex = col.tasks?.findIndex(
-                (t) => t.id === overId,
-              );
-              return {
-                ...col,
+            if (resultColumn.id === overColumnId) {
+              // adding task to the column it's dragged to
+              let position;
+              if (overId === overColumnId) {
+                // if not over a task - adding to the start
+                const firstTask = findFirstTask(resultColumn);
+                position = firstTask
+                  ? firstTask.position - POSITION_DIFFERENCE
+                  : 0;
+              } else {
+                // if over a task
+                const sortedTasks = resultColumn.tasks?.toSorted(
+                  (a, b) => a.position - b.position,
+                );
+                const overTaskIndex = sortedTasks?.findIndex(
+                  (t) => t.id === overId,
+                );
+                if (
+                  !sortedTasks ||
+                  overTaskIndex === undefined ||
+                  overTaskIndex === -1
+                )
+                  return resultColumn;
+                //over the first task
+                if (overTaskIndex === 0)
+                  position =
+                    sortedTasks[overTaskIndex].position - POSITION_DIFFERENCE;
+                // over the last task
+                else if (overTaskIndex === sortedTasks.length - 1)
+                  position =
+                    sortedTasks[overTaskIndex].position + POSITION_DIFFERENCE;
+                // in between tasks
+                else
+                  position =
+                    (sortedTasks[overTaskIndex].position +
+                      sortedTasks[overTaskIndex - 1].position) /
+                    2;
+              }
+
+              resultColumn = {
+                ...resultColumn,
                 tasks: [
-                  ...(col.tasks?.slice(0, overTaskIndex) || []),
-                  activeTask,
-                  ...(col.tasks?.slice(overTaskIndex) || []),
+                  ...(resultColumn.tasks || []),
+                  { ...activeTask, columnId: overColumnId, position },
                 ],
               };
             }
-            return col;
+            return resultColumn;
           }),
         },
       };
@@ -70,34 +109,58 @@ type useUpdateTaskMutateFn = ReturnType<typeof useUpdateTask>["mutate"];
 export function syncTaskPosition({
   oldColumnId,
   active,
-  board,
+  boardId,
   mutate,
 }: {
   oldColumnId: number;
   active: Active;
-  board: BoardType;
+  boardId: number;
   mutate: useUpdateTaskMutateFn;
 }) {
   const activeId = parseInt(active.id.toString());
-
-  const activeColumnId = findColumnId(board, active.id);
-  if (!activeColumnId) return;
-
   const finalBoard = queryClient.getQueryData<{ board: BoardType }>([
     "boards",
-    board.id,
+    boardId,
   ])?.board;
-
   if (!finalBoard?.columns) return;
-  for (const col of finalBoard.columns) {
-    const finalTask = col.tasks?.find((t) => t.id === activeId);
-    if (finalTask) {
-      if (oldColumnId === activeColumnId) return;
-      mutate({
-        id: activeId,
-        newFields: { columnId: activeColumnId },
-        oldColumnId,
-      });
-    }
-  }
+
+  const activeColumnId = findColumnId(finalBoard, active.id);
+  if (!activeColumnId) return;
+
+  const column = finalBoard.columns.find((col) => col.id === activeColumnId);
+  const sortedTasks = column?.tasks?.toSorted(
+    (a, b) => a.position - b.position,
+  );
+  if (!sortedTasks) return;
+
+  const activeTaskIndex = sortedTasks.findIndex((t) => t.id === activeId);
+  if (activeTaskIndex === -1) return;
+
+  const activeTask = sortedTasks[activeTaskIndex];
+  const beforeTask = sortedTasks[activeTaskIndex - 1];
+  const afterTask = sortedTasks[activeTaskIndex + 1];
+
+  let rebalance = false;
+  if (
+    beforeTask &&
+    Math.abs(beforeTask.position - activeTask.position) <=
+      MIN_POSITION_DIFFERENCE
+  )
+    rebalance = true;
+  if (
+    afterTask &&
+    Math.abs(afterTask.position - activeTask.position) <=
+      MIN_POSITION_DIFFERENCE
+  )
+    rebalance = true;
+
+  mutate({
+    id: activeId,
+    newFields: {
+      columnId: activeColumnId,
+      position: sortedTasks[activeTaskIndex].position,
+    },
+    oldColumnId,
+    rebalance,
+  });
 }
