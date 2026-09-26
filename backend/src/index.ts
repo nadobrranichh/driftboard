@@ -46,7 +46,7 @@ io.use(authenticateSocketConnection);
 
 io.on("connection", (socket) => {
   console.log("client connected", socket.id, socket.data);
-  socket.join(socket.data.user.id);
+  socket.join(socket.data.user.id.toString());
 
   socket.on("disconnect", () => {
     console.log("client disconnected", socket.id);

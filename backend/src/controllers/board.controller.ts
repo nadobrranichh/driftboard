@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import prisma from "../config/db.js";
 import { checkIfIsMember } from "../util/boardMembership.js";
+import { io } from "../index.js";
 
 export async function getBoards(req: Request, res: Response) {
   if (!req.user) return res.status(401).json({ error: "Not authenticated" });
@@ -106,12 +107,31 @@ export async function updateBoard(req: Request, res: Response) {
   if (!isMember)
     return res.status(403).json({ error: "Not a member of this board" });
 
-  if (members?.length > 0) {
-    const boardMembers = await prisma.boardMember.findMany({
-      where: { boardId },
+  let updated;
+  try {
+    updated = await prisma.board.update({
+      where: { id: boardId },
+      data: {
+        ...(title && title.trim().length > 0 && { title }),
+        ...(icon && icon.trim().length > 0 && { icon }),
+        ...(iconColor && iconColor.trim().length > 0 && { iconColor }),
+      },
     });
+  } catch (error: any) {
+    if (error.code === "P2025")
+      return res.status(404).json({ error: "Board not found" });
 
-    const membersIds = members.map((m) => m.id);
+    console.error(error);
+    return res.status(500).json({ error: "Failed to update board" });
+  }
+  const board = { ...updated, ...(members?.length > 0 && { members }) };
+  res.json({ board });
+
+  const boardMembers = await prisma.boardMember.findMany({
+    where: { boardId },
+  });
+  if (members?.length > 0) {
+    const membersIds: number[] = members.map((m: { id: number }) => m.id);
     const boardMembersIds = boardMembers.map((bm) => bm.userId);
 
     const memberIdsToRemove = boardMembersIds.filter(
@@ -137,26 +157,35 @@ export async function updateBoard(req: Request, res: Response) {
           data: memberIdsToAdd.map((userId: number) => ({ userId, boardId })),
         });
     });
-  }
 
-  try {
-    const updated = await prisma.board.update({
-      where: { id: boardId },
-      data: {
-        ...(title && title.trim().length > 0 && { title }),
-        ...(icon && icon.trim().length > 0 && { icon }),
-        ...(iconColor && iconColor.trim().length > 0 && { iconColor }),
-      },
-    });
-    return res.json({
-      board: { ...updated, ...(members?.length > 0 && { members }) },
-    });
-  } catch (error: any) {
-    if (error.code === "P2025")
-      return res.status(404).json({ error: "Board not found" });
+    if (memberIdsToRemove.length > 0)
+      io.to(memberIdsToRemove.map((id) => id.toString())).emit(
+        "removed-from-board",
+        { boardId },
+      );
 
-    console.error(error);
-    return res.status(500).json({ error: "Failed to update board" });
+    if (memberIdsToAdd.length > 0) {
+      const taskCount = await prisma.task.count({
+        where: { column: { boardId } },
+      });
+      io.to(memberIdsToAdd.map((id) => id.toString())).emit("added-to-board", {
+        board: { ...board, taskCount },
+      });
+    }
+
+    const untouchedMemberRooms = boardMembersIds
+      .filter((id) => !memberIdsToRemove.includes(id) && id !== req.user?.id)
+      .map((id) => id.toString());
+
+    if (untouchedMemberRooms.length > 0)
+      io.to(untouchedMemberRooms).emit("board-updated", { board });
+  } else {
+    const membersRooms = boardMembers
+      .map((bm) => bm.userId)
+      .filter((id) => id !== req.user?.id)
+      .map((id) => id.toString());
+
+    io.to(membersRooms).emit("board-updated", { board });
   }
 }
 
