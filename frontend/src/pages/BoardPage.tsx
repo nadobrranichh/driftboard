@@ -30,7 +30,10 @@ import { fade } from "../motion/variants";
 import BoardSettings from "../components/BoardSettings";
 import TaskDetail from "../components/TaskDetail";
 import { useAuthStore } from "../store/useAuthStore";
-import { handleBoardUpdated, handleRemovedFromBoard } from "../socket/board";
+import {
+  updateBoardCache,
+  removeBoardFromCache,
+} from "../utils/query-cache/boards";
 
 export default function BoardPage() {
   const { socket } = useAuthStore();
@@ -102,6 +105,11 @@ export default function BoardPage() {
     startDraggingRef.current = null;
   }
 
+  function handleNavigateHome() {
+    if (socket && board) socket.emit("close-board", { boardId: board.id });
+    navigate("/home");
+  }
+
   useEffect(() => {
     if (!socket) return;
 
@@ -110,17 +118,17 @@ export default function BoardPage() {
     }: {
       boardId: number;
     }) {
-      handleRemovedFromBoard({ boardId: removedBoardId });
+      removeBoardFromCache({ boardId: removedBoardId });
       if (removedBoardId === Number(boardId)) {
         navigate("/home");
       }
     }
 
-    socket.on("board-updated", handleBoardUpdated);
+    socket.on("board-updated", updateBoardCache);
     socket.on("removed-from-board", onRemovedFromBoard);
 
     return () => {
-      socket.off("board-updated", handleBoardUpdated);
+      socket.off("board-updated", updateBoardCache);
       socket.off("removed-from-board", onRemovedFromBoard);
     };
   }, [socket]);
@@ -164,7 +172,7 @@ export default function BoardPage() {
 
         <button
           className="absolute left-3 cursor-pointer"
-          onClick={() => navigate("/home")}
+          onClick={handleNavigateHome}
         >
           <ArrowLeft className="text-text-muted" />
         </button>

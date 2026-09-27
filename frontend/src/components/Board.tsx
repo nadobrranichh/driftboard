@@ -6,19 +6,28 @@ import { useNavigate } from "react-router";
 import { motion } from "framer-motion";
 import { fade } from "../motion/variants";
 import { hoverScale, tapScale } from "../motion/value-presets";
+import { useAuthStore } from "../store/useAuthStore";
 
 export default function Board({ data }: { data: BoardType }) {
+  const { socket } = useAuthStore();
   const navigate = useNavigate();
   const Icon = boardIcons[data.icon];
   const colors =
     boardColorRamps[data.iconColor as keyof typeof boardColorRamps];
+
+  function handleClick() {
+    if (!socket) return;
+    socket.emit("open-board", { boardId: data.id });
+    navigate(`/board/${data.id}`);
+  }
+
   return (
     <motion.div
       variants={fade()}
       whileHover={hoverScale}
       whileTap={tapScale}
       className="flex gap-3 p-4 bg-surface rounded-lg border border-border min-h-20 cursor-pointer"
-      onClick={() => navigate(`/board/${data.id}`)}
+      onClick={handleClick}
     >
       <div
         className={`h-full p-3 rounded-lg`}

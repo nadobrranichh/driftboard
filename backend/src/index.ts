@@ -45,8 +45,17 @@ export const io = new Server(httpServer, {
 io.use(authenticateSocketConnection);
 
 io.on("connection", (socket) => {
-  console.log("client connected", socket.id, socket.data);
+  console.log("client connected", socket.id);
   socket.join(socket.data.user.id.toString());
+
+  socket.on("open-board", ({ boardId }: { boardId: number }) => {
+    console.log(`BOARD ${boardId} OPENED BY`, socket.data.user.id);
+    socket.join(`board-${boardId}`);
+  });
+  socket.on("close-board", ({ boardId }: { boardId: number }) => {
+    console.log(`BOARD ${boardId} CLOSED BY`, socket.data.user.id);
+    socket.leave(`board-${boardId}`);
+  });
 
   socket.on("disconnect", () => {
     console.log("client disconnected", socket.id);
