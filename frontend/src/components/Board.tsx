@@ -1,5 +1,5 @@
 import { ChevronRight } from "lucide-react";
-import type { BoardType } from "../types";
+import type { BoardType, TaskType } from "../types";
 import { boardColorRamps, boardIcons } from "../lists/boardIconsList";
 import { isSingular } from "../utils/strings";
 import { useNavigate } from "react-router";
@@ -7,6 +7,8 @@ import { motion } from "framer-motion";
 import { fade } from "../motion/variants";
 import { hoverScale, tapScale } from "../motion/value-presets";
 import { useAuthStore } from "../store/useAuthStore";
+import { useEffect } from "react";
+import { addTaskInCache } from "../utils/query-cache/tasks";
 
 export default function Board({ data }: { data: BoardType }) {
   const { socket } = useAuthStore();
@@ -14,6 +16,24 @@ export default function Board({ data }: { data: BoardType }) {
   const Icon = boardIcons[data.icon];
   const colors =
     boardColorRamps[data.iconColor as keyof typeof boardColorRamps];
+
+  useEffect(() => {
+    if (!socket) return;
+    function handleUpdateCache({
+      task,
+      boardId,
+    }: {
+      task: TaskType;
+      boardId: number;
+    }) {
+      if (data.id === boardId) addTaskInCache({ task, boardId });
+    }
+    socket.on("task-added", handleUpdateCache);
+
+    return () => {
+      socket.off("task-added", handleUpdateCache);
+    };
+  }, [socket]);
 
   function handleClick() {
     if (!socket) return;

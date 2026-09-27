@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import prisma from "../config/db.js";
 import { checkIfIsMember } from "../util/boardMembership.js";
+import { io } from "../index.js";
 
 const POSITION_DIFFERENCE = Math.pow(2, 15);
 
@@ -69,6 +70,17 @@ export async function addTask(req: Request, res: Response) {
         columnId,
       },
     });
+
+    const memberIds = (
+      await prisma.boardMember.findMany({
+        where: { boardId: column.boardId },
+      })
+    ).map((bm) => bm.userId.toString());
+
+    //sending to all members
+    io.to(memberIds)
+      .except(req.user.id.toString())
+      .emit("task-added", { task, boardId: column.boardId });
 
     return res.status(201).json({ task });
   } catch (error) {
