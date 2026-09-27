@@ -1,23 +1,11 @@
 import { useMutation } from "@tanstack/react-query";
 import { createBoard } from "../http/boards";
-import { queryClient } from "../http";
-import type { BoardType } from "../types";
+import { addBoardToCache } from "../utils/query-cache/boards";
 
 export default function useCreateBoard() {
   return useMutation({
     mutationFn: createBoard,
-    onSuccess: (data) => {
-      queryClient.setQueryData(
-        ["boards"],
-        (oldBoards: { boards: BoardType[] } | null) => {
-          const boards = oldBoards?.boards;
-          if (!boards) return oldBoards;
-          return {
-            boards: [...boards, { ...data.board, taskCount: 0 }],
-          };
-        },
-      );
-    },
+    onSuccess: (data) => addBoardToCache(data),
     onError: (err) => console.error(err),
   });
 }

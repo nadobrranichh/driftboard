@@ -1,7 +1,22 @@
-import { queryClient } from "../http";
-import type { BoardType } from "../types";
+import type { BoardType } from "../../types";
+import { queryClient } from "../../http";
 
-export function handleRemovedFromBoard({ boardId }: { boardId: number }) {
+export function addBoardToCache({ board }: { board: BoardType }) {
+  queryClient.setQueryData(
+    ["boards"],
+    (oldBoards: { boards: BoardType[] } | null) => {
+      const boards = oldBoards?.boards;
+      if (!boards) return oldBoards;
+
+      const taskCount = board.taskCount || 0;
+      return {
+        boards: [...boards, { ...board, taskCount }],
+      };
+    },
+  );
+}
+
+export function removeBoardFromCache({ boardId }: { boardId: number }) {
   queryClient.setQueryData(
     ["boards"],
     (oldBoards: { boards: BoardType[] } | null) => {
@@ -18,20 +33,7 @@ export function handleRemovedFromBoard({ boardId }: { boardId: number }) {
   }
 }
 
-export function handleAddedToBoard({ board }: { board: BoardType }) {
-  queryClient.setQueryData(
-    ["boards"],
-    (oldBoards: { boards: BoardType[] } | null) => {
-      const boards = oldBoards?.boards;
-      if (!boards) return oldBoards;
-      return {
-        boards: [...boards, board],
-      };
-    },
-  );
-}
-
-export function handleBoardUpdated({
+export function updateBoardCache({
   board: boardToUpdate,
 }: {
   board: BoardType;

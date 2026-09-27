@@ -11,10 +11,10 @@ import { fade } from "../motion/variants";
 import { hoverScale, tapScale } from "../motion/value-presets";
 import { useAuthStore } from "../store/useAuthStore";
 import {
-  handleAddedToBoard,
-  handleBoardUpdated,
-  handleRemovedFromBoard,
-} from "../socket/board";
+  addBoardToCache,
+  updateBoardCache,
+  removeBoardFromCache,
+} from "../utils/query-cache/boards";
 
 export default function HomePage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -25,14 +25,14 @@ export default function HomePage() {
 
   useEffect(() => {
     if (!socket) return;
-    socket.on("removed-from-board", handleRemovedFromBoard);
-    socket.on("added-to-board", handleAddedToBoard);
-    socket.on("board-updated", handleBoardUpdated);
+    socket.on("removed-from-board", removeBoardFromCache);
+    socket.on("added-to-board", addBoardToCache);
+    socket.on("board-updated", updateBoardCache);
 
     return () => {
-      socket.off("removed-from-board", handleRemovedFromBoard);
-      socket.off("added-to-board", handleAddedToBoard);
-      socket.off("board-updated", handleBoardUpdated);
+      socket.off("removed-from-board", removeBoardFromCache);
+      socket.off("added-to-board", addBoardToCache);
+      socket.off("board-updated", updateBoardCache);
     };
   }, [socket]);
 
