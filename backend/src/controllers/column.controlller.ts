@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import { checkIfIsMember } from "../util/boardMembership.js";
 import prisma from "../config/db.js";
+import { io } from "../index.js";
 
 export async function addColumn(req: Request, res: Response) {
   if (!req.user) return res.status(401).json({ error: "Not authenticated" });
@@ -26,6 +27,12 @@ export async function addColumn(req: Request, res: Response) {
     const column = await prisma.column.create({
       data: { title, boardId, position },
     });
+
+    // sending to everyone in the room
+    // except the user that created the column
+    io.to(`board-${boardId}`)
+      .except(req.user.id.toString())
+      .emit("column-added", { column });
 
     return res.status(201).json({ column });
   } catch (error) {

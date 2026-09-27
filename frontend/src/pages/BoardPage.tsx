@@ -34,6 +34,7 @@ import {
   updateBoardCache,
   removeBoardFromCache,
 } from "../utils/query-cache/boards";
+import { handleAddColumn } from "../utils/query-cache/columns";
 
 export default function BoardPage() {
   const { socket } = useAuthStore();
@@ -126,10 +127,12 @@ export default function BoardPage() {
 
     socket.on("board-updated", updateBoardCache);
     socket.on("removed-from-board", onRemovedFromBoard);
+    socket.on("column-added", handleAddColumn);
 
     return () => {
       socket.off("board-updated", updateBoardCache);
       socket.off("removed-from-board", onRemovedFromBoard);
+      socket.off("column-added", handleAddColumn);
     };
   }, [socket]);
   const Icon = board ? boardIcons[board.icon] : null;

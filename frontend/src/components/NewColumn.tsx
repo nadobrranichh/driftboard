@@ -7,7 +7,7 @@ import { fade } from "../motion/variants";
 
 export default function NewColumn() {
   const { boardId } = useParams();
-  const createColumn = useCreateColumn(Number(boardId));
+  const createColumn = useCreateColumn();
   const [isAddingNewColumn, setIsAddingNewColumn] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
