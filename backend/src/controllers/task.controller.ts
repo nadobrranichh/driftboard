@@ -187,8 +187,21 @@ export async function updateTask(req: Request, res: Response) {
           task.position = POSITION_DIFFERENCE * i;
         }
       });
-      return res.json({ task: updated, tasks });
-    } else return res.json({ task: updated });
+      res.json({ task: updated, tasks });
+
+      io.to(`board-${task.column.boardId}`)
+        .except(req.user.id.toString())
+        .emit("task-updated", {
+          task: updated,
+          tasks,
+          oldColumnId: task.columnId,
+        });
+    } else {
+      res.json({ task: updated });
+      io.to(`board-${task.column.boardId}`)
+        .except(req.user.id.toString())
+        .emit("task-updated", { task: updated, oldColumnId: task.columnId });
+    }
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Failed to update task" });

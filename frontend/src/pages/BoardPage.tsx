@@ -35,7 +35,7 @@ import {
   removeBoardFromCache,
 } from "../utils/query-cache/boards";
 import { handleAddColumn } from "../utils/query-cache/columns";
-import { addTaskInCache } from "../utils/query-cache/tasks";
+import { addTaskInCache, updateTaskInCache } from "../utils/query-cache/tasks";
 
 export default function BoardPage() {
   const { socket } = useAuthStore();
@@ -125,17 +125,30 @@ export default function BoardPage() {
         navigate("/home");
       }
     }
+    function handleUpdateTask({
+      task,
+      tasks,
+      oldColumnId,
+    }: {
+      task: TaskType;
+      tasks?: TaskType[];
+      oldColumnId: number;
+    }) {
+      updateTaskInCache({ task, tasks, oldColumnId, boardId: Number(boardId) });
+    }
 
     socket.on("board-updated", updateBoardCache);
     socket.on("removed-from-board", onRemovedFromBoard);
     socket.on("column-added", handleAddColumn);
     socket.on("task-added", addTaskInCache);
+    socket.on("task-updated", handleUpdateTask);
 
     return () => {
       socket.off("board-updated", updateBoardCache);
       socket.off("removed-from-board", onRemovedFromBoard);
       socket.off("column-added", handleAddColumn);
       socket.off("task-added", addTaskInCache);
+      socket.off("task-updated", handleUpdateTask);
     };
   }, [socket]);
   const Icon = board ? boardIcons[board.icon] : null;

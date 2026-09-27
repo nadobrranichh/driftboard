@@ -44,3 +44,45 @@ export function addTaskInCache({
     },
   );
 }
+
+export function updateTaskInCache({
+  task: updatedTask,
+  boardId,
+  tasks: updatedTasks,
+  oldColumnId,
+}: {
+  task: TaskType;
+  boardId: number;
+  tasks?: TaskType[];
+  oldColumnId?: number;
+}) {
+  if (!oldColumnId) oldColumnId = updatedTask.columnId;
+
+  queryClient.setQueryData(
+    ["boards", boardId],
+    (oldBoard: { board: BoardType } | undefined) => {
+      if (!oldBoard) return oldBoard;
+      const board = oldBoard.board;
+
+      const columns = board.columns!.map((col) => {
+        const isFilterColumn =
+          col.id === oldColumnId || col.id === updatedTask.columnId;
+
+        return {
+          ...col,
+          tasks: isFilterColumn
+            ? col.tasks!.filter((t) => t.id !== updatedTask.id)
+            : col.tasks,
+        };
+      });
+
+      const targetCol = columns.find((c) => c.id === updatedTask.columnId);
+      if (targetCol) {
+        if (updatedTasks) targetCol.tasks = updatedTasks;
+        else targetCol.tasks = [...(targetCol.tasks || []), updatedTask];
+      }
+
+      return { board: { ...board, columns } };
+    },
+  );
+}
