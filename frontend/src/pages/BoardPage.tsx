@@ -1,41 +1,26 @@
-import { ArrowLeft, Settings } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import NewTaskForm from "../components/NewTaskForm";
 import { useLocation, useNavigate, useParams } from "react-router";
-import type { BoardType, ColumnType, OpenForm, TaskType } from "../types";
+import type { BoardType, ColumnType, OpenForm } from "../types";
 import ColumnPill from "../components/ColumnPill";
 import useGetBoard from "../hooks/useGetBoard";
-import { boardColorRamps, boardIcons } from "../lists/boardIconsList";
 import useBreakpoints from "../hooks/useBreakpoints";
 import Column from "../components/Column";
 import NewColumn from "../components/NewColumn";
 import {
   closestCorners,
   DndContext,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  type DragEndEvent,
-  type DragOverEvent,
-  type DragStartEvent,
   type UniqueIdentifier,
 } from "@dnd-kit/core";
-import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
-import useUpdateTask from "../hooks/useUpdateTask";
-import { findColumnId, getColumn } from "../utils/tasks";
-import { moveTaskInCache, syncTaskPosition } from "../http/boardCacheUpdates";
+import { getColumn } from "../utils/tasks";
 import { AnimatePresence, motion } from "framer-motion";
 import { fade } from "../motion/variants";
 import BoardSettings from "../components/BoardSettings";
 import TaskDetail from "../components/TaskDetail";
 import { useAuthStore } from "../store/useAuthStore";
-import {
-  updateBoardCache,
-  removeBoardFromCache,
-} from "../utils/query-cache/boards";
-import { handleAddColumn } from "../utils/query-cache/columns";
-import { addTaskInCache, updateTaskInCache } from "../utils/query-cache/tasks";
+import useBoardEvents from "../hooks/useBoardEvents";
+import useBoardDnd from "../hooks/useBoardDnd";
+import BoardHeader from "../components/BoardHeader";
 
 export default function BoardPage() {
   const { socket } = useAuthStore();
@@ -43,12 +28,14 @@ export default function BoardPage() {
   const navigate = useNavigate();
   const { boardId } = useParams();
   const location = useLocation();
-  const updateTask = useUpdateTask(Number(boardId));
+
   const boardQuery = useGetBoard(Number(boardId), location.state);
   const board: BoardType | null = boardQuery.data
     ? boardQuery.data.board
     : null;
-  const startDraggingRef = useRef<Partial<TaskType>>(null);
+  const { sensors, handleDragStart, handleDragOver, handleDragEnd } =
+    useBoardDnd(board);
+
   const [openForm, setOpenForm] = useState<OpenForm>(null);
   const [activeColumnId, setActiveColumnId] = useState<UniqueIdentifier | null>(
     null,
@@ -58,15 +45,6 @@ export default function BoardPage() {
     board?.columns &&
     activeColumnId &&
     getColumn(board, parseInt(activeColumnId.toString()));
-
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: { distance: 10, tolerance: 5, delay: 75 },
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    }),
-  );
 
   function handleAddingNewTask(columnId: UniqueIdentifier) {
     setActiveColumnId(columnId);
@@ -78,85 +56,14 @@ export default function BoardPage() {
     setOpenForm("task-detail");
   }
 
-  function handleDragStart(e: DragStartEvent) {
-    if (!board?.columns) return;
-    const columnId = findColumnId(board, e.active.id);
-    if (!columnId) return;
-    startDraggingRef.current = { columnId };
-  }
-
-  function handleDragOver(e: DragOverEvent) {
-    const { active, over } = e;
-    if (!active || !over || !board?.columns) return;
-    moveTaskInCache({ board, active, over });
-  }
-
-  function handleDragEnd(e: DragEndEvent) {
-    const { active } = e;
-    if (!active || !board?.columns) return;
-    const oldColumnId = startDraggingRef.current?.columnId;
-    if (!oldColumnId) return;
-
-    syncTaskPosition({
-      oldColumnId,
-      active,
-      boardId: board.id,
-      mutate: updateTask.mutate,
-    });
-
-    startDraggingRef.current = null;
-  }
-
   function handleNavigateHome() {
     if (socket && board) socket.emit("close-board", { boardId: board.id });
     navigate("/home");
   }
 
-  useEffect(() => {
-    if (!socket) return;
+  useBoardEvents(Number(boardId), board?.title);
 
-    function onRemovedFromBoard({
-      boardId: removedBoardId,
-    }: {
-      boardId: number;
-    }) {
-      removeBoardFromCache({ boardId: removedBoardId });
-      if (removedBoardId === Number(boardId)) {
-        navigate("/home");
-      }
-    }
-    function handleUpdateTask({
-      task,
-      tasks,
-      oldColumnId,
-    }: {
-      task: TaskType;
-      tasks?: TaskType[];
-      oldColumnId: number;
-    }) {
-      updateTaskInCache({ task, tasks, oldColumnId, boardId: Number(boardId) });
-    }
-
-    socket.on("board-updated", updateBoardCache);
-    socket.on("removed-from-board", onRemovedFromBoard);
-    socket.on("column-added", handleAddColumn);
-    socket.on("task-added", addTaskInCache);
-    socket.on("task-updated", handleUpdateTask);
-
-    return () => {
-      socket.off("board-updated", updateBoardCache);
-      socket.off("removed-from-board", onRemovedFromBoard);
-      socket.off("column-added", handleAddColumn);
-      socket.off("task-added", addTaskInCache);
-      socket.off("task-updated", handleUpdateTask);
-    };
-  }, [socket]);
-  const Icon = board ? boardIcons[board.icon] : null;
-  const colors = board
-    ? boardColorRamps[board.iconColor as keyof typeof boardColorRamps]
-    : null;
-
-  if (!board?.columns || !colors || !Icon) return <p>Loading...</p>;
+  if (!board?.columns) return <p>Loading...</p>;
 
   return (
     <main className="flex flex-col p-1-5">
@@ -181,29 +88,11 @@ export default function BoardPage() {
         )}
       </AnimatePresence>
 
-      <div className=" flex flex-col justify-start items-center gap-1 -mt-3">
-        <div
-          className={`h-full p-1.5 rounded-lg`}
-          style={{ backgroundColor: colors.bg }}
-        >
-          <Icon style={{ height: "1.5rem" }} color={colors.fg} />
-        </div>
-
-        <button
-          className="absolute left-3 cursor-pointer"
-          onClick={handleNavigateHome}
-        >
-          <ArrowLeft className="text-text-muted" />
-        </button>
-        <button
-          className="absolute right-3 cursor-pointer"
-          onClick={() => setOpenForm("settings")}
-        >
-          <Settings className="text-text-muted" />
-        </button>
-
-        <h2 className="font-bold text-xl mb-2">{board.title}</h2>
-      </div>
+      <BoardHeader
+        board={board}
+        onNavigateHome={handleNavigateHome}
+        onOpenSettings={() => setOpenForm("settings")}
+      />
       {isLg ? (
         <DndContext
           sensors={sensors}
