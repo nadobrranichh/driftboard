@@ -15,26 +15,42 @@ import {
   updateBoardCache,
   removeBoardFromCache,
 } from "../utils/query-cache/boards";
+import { useNotificationsStore } from "../store/useNotificationsStore";
 
 export default function HomePage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const { socket } = useAuthStore();
+  const { addNotification } = useNotificationsStore();
 
   const boardsQuery = useQuery({ queryKey: ["boards"], queryFn: getBoards });
   const boards = boardsQuery.data ? boardsQuery.data.boards : [];
 
   useEffect(() => {
     if (!socket) return;
-    socket.on("removed-from-board", removeBoardFromCache);
-    socket.on("added-to-board", addBoardToCache);
-    socket.on("board-updated", updateBoardCache);
+    function onRemovedFromBoard({ boardId }: { boardId: number }) {
+      if (!boards.length) return;
+      const board = boards.find((b: BoardType) => b.id === boardId);
+      addNotification(`You just got removed from board: ${board.title}`);
+      removeBoardFromCache({ boardId });
+    }
+    function onAddedToBoard({ board }: { board: BoardType }) {
+      addNotification(`You just got added to board: ${board.title}`);
+      addBoardToCache({ board });
+    }
+    function onBoardUpdated({ board }: { board: BoardType }) {
+      addNotification(`Board info updated for: ${board.title}`);
+      updateBoardCache({ board });
+    }
+    socket.on("removed-from-board", onRemovedFromBoard);
+    socket.on("added-to-board", onAddedToBoard);
+    socket.on("board-updated", onBoardUpdated);
 
     return () => {
-      socket.off("removed-from-board", removeBoardFromCache);
-      socket.off("added-to-board", addBoardToCache);
-      socket.off("board-updated", updateBoardCache);
+      socket.off("removed-from-board", onRemovedFromBoard);
+      socket.off("added-to-board", onAddedToBoard);
+      socket.off("board-updated", onBoardUpdated);
     };
-  }, [socket]);
+  }, [socket, boards]);
 
   return (
     <main>
