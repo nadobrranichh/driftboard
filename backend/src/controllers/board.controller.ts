@@ -200,8 +200,21 @@ export async function deleteBoard(req: Request, res: Response) {
     return res.status(403).json({ error: "Not a member of this board" });
 
   try {
-    await prisma.board.delete({ where: { id: boardId } });
-    return res.json({ message: "Board deleted successfully", boardId });
+    const boardMembers = await prisma.boardMember.findMany({
+      where: { boardId },
+    });
+    const membersRooms = boardMembers
+      .map((bm) => bm.userId)
+      .filter((id) => id !== req.user?.id)
+      .map((id) => id.toString());
+
+    const deleted = await prisma.board.delete({ where: { id: boardId } });
+    res.json({ message: "Board deleted successfully", boardId });
+
+    io.to(membersRooms).emit("board-deleted", {
+      boardId,
+      boardTitle: deleted.title,
+    });
   } catch (error: any) {
     if (error.code === "P2025")
       return res.status(404).json({ error: "Board not found" });

@@ -3,6 +3,7 @@ import { useAuthStore } from "../store/useAuthStore";
 import { useNotificationsStore } from "../store/useNotificationsStore";
 import { useEffect } from "react";
 import {
+  deleteBoardFromCache,
   removeBoardFromCache,
   updateBoardCache,
 } from "../utils/query-cache/boards";
@@ -38,11 +39,15 @@ export default function useBoardEvents(boardId: number, boardTitle?: string) {
       addNotification(`Board info updated!`);
       updateBoardCache({ board });
     }
+    function onBoardDeleted() {
+      addNotification(`Board '${boardTitle}' was deleted`);
+      deleteBoardFromCache({ boardId });
+      navigate("/home");
+    }
     function onRemovedFromBoard({ boardId: removedId }: { boardId: number }) {
-      if (boardTitle)
-        addNotification(`You just got removed from board: ${boardTitle}`);
+      addNotification(`You just got removed from board: ${boardTitle}`);
       removeBoardFromCache({ boardId: removedId });
-      if (removedId === boardId) navigate("/home");
+      navigate("/home");
     }
     function onColumnAdded({ column }: { column: ColumnType }) {
       addNotification(`Column added: ${column.title}`);
@@ -66,6 +71,7 @@ export default function useBoardEvents(boardId: number, boardTitle?: string) {
     }
 
     socket.on("board-updated", onBoardUpdated);
+    socket.on("board-deleted", onBoardDeleted);
     socket.on("removed-from-board", onRemovedFromBoard);
     socket.on("column-added", onColumnAdded);
     socket.on("task-added", onTaskAdded);
@@ -73,6 +79,7 @@ export default function useBoardEvents(boardId: number, boardTitle?: string) {
     socket.on("task-deleted", onTaskDeleted);
     return () => {
       socket.off("board-updated", onBoardUpdated);
+      socket.off("board-deleted", onBoardDeleted);
       socket.off("removed-from-board", onRemovedFromBoard);
       socket.off("column-added", onColumnAdded);
       socket.off("task-added", onTaskAdded);

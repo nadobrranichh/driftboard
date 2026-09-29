@@ -14,6 +14,7 @@ import {
   addBoardToCache,
   updateBoardCache,
   removeBoardFromCache,
+  deleteBoardFromCache,
 } from "../utils/query-cache/boards";
 import { useNotificationsStore } from "../store/useNotificationsStore";
 
@@ -41,14 +42,27 @@ export default function HomePage() {
       addNotification(`Board info updated for: ${board.title}`);
       updateBoardCache({ board });
     }
+    function onBoardDeleted({
+      boardId,
+      boardTitle,
+    }: {
+      boardId: number;
+      boardTitle: string;
+    }) {
+      console.log("BOARD DELETED EVENT!", boardId, boardTitle);
+      addNotification(`Board '${boardTitle}' was deleted`);
+      deleteBoardFromCache({ boardId });
+    }
     socket.on("removed-from-board", onRemovedFromBoard);
     socket.on("added-to-board", onAddedToBoard);
     socket.on("board-updated", onBoardUpdated);
+    socket.on("board-deleted", onBoardDeleted);
 
     return () => {
       socket.off("removed-from-board", onRemovedFromBoard);
       socket.off("added-to-board", onAddedToBoard);
       socket.off("board-updated", onBoardUpdated);
+      socket.off("board-deleted", onBoardDeleted);
     };
   }, [socket, boards]);
 
