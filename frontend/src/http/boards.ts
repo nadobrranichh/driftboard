@@ -29,3 +29,12 @@ export async function updateBoard(data: BoardType) {
   if (resData.error) throw resData;
   return resData;
 }
+
+export async function deleteBoard({ boardId }: { boardId: number }) {
+  const data = await sendRequest(
+    `/boards/${boardId}`,
+    requestInit("DELETE", {}),
+  );
+  if (data.error) throw data;
+  return data;
+}

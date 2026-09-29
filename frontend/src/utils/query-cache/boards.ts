@@ -62,3 +62,18 @@ export function updateBoardCache({
     },
   );
 }
+
+export function deleteBoardFromCache({ boardId }: { boardId: number }) {
+  queryClient.setQueryData(["boards", Number(boardId)], null);
+  queryClient.setQueryData(
+    ["boards"],
+    (oldBoards: { boards: BoardType[] } | null) => {
+      if (!oldBoards?.boards) return oldBoards;
+      return {
+        boards: oldBoards.boards.filter(
+          (board) => board.id !== Number(boardId),
+        ),
+      };
+    },
+  );
+}

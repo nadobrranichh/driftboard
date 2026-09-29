@@ -11,8 +11,9 @@ import { arraysAreEqual } from "../utils/arrays";
 import useUpdateBoard from "../hooks/useUpdateBoard";
 import IconAndColorPicker from "./IconAndColorPicker";
 import AddMemberByEmail from "./AddMemberByEmail";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { fade } from "../motion/variants";
+import BoardDeleteForm from "./BoardDeleteForm";
 
 export default function BoardSettings({ onClose }: { onClose: () => void }) {
   const { boardId } = useParams();
@@ -22,6 +23,7 @@ export default function BoardSettings({ onClose }: { onClose: () => void }) {
   const board = boardQuery.data ? boardQuery.data.board : null;
   const [fieldsData, setFieldsData] = useState(board);
   const [inputErrors, setInputErrors] = useState<string[]>([]);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const membersToDisplay =
     fieldsData && user
@@ -80,12 +82,20 @@ export default function BoardSettings({ onClose }: { onClose: () => void }) {
 
   return (
     <Backdrop onClick={onClose}>
+      <AnimatePresence>
+        {isDeleting && (
+          <BoardDeleteForm
+            boardTitle={board.title}
+            onClose={() => setIsDeleting(false)}
+          />
+        )}
+      </AnimatePresence>
       <motion.form
         variants={fade({ withStagger: true })}
         initial="hidden"
         animate="visible"
         exit="exit"
-        className="bg-surface rounded-xl p-6 flex flex-col gap-3 relative"
+        className="bg-surface rounded-xl p-6 flex flex-col gap-3 relative max-w-100"
         onClick={(e) => e.stopPropagation()}
         onSubmit={handleSubmit}
       >
@@ -135,6 +145,16 @@ export default function BoardSettings({ onClose }: { onClose: () => void }) {
           </Button>
           <Button className="py-2">Submit Changes</Button>
         </div>
+
+        <motion.hr variants={fade()} className="text-text-muted" />
+        <Button
+          type="button"
+          className="py-2"
+          variant="danger"
+          onClick={() => setIsDeleting(true)}
+        >
+          Delete this board
+        </Button>
       </motion.form>
     </Backdrop>
   );
