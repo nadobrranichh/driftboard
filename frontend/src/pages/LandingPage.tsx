@@ -24,7 +24,7 @@ export default function LandingPage() {
           <Button className="p-2" onClick={() => navigate("/auth?mode=signup")}>
             Sign up - it's free!
           </Button>
-          <Button className="p-2" outlined>
+          <Button className="p-2" variant="outlined">
             See how it works
           </Button>
         </div>
@@ -70,10 +70,10 @@ export default function LandingPage() {
         </p>
         <Button
           className="p-2"
-          outlined
+          variant="outlined"
           onClick={() => navigate("/auth?mode=signup")}
         >
-          <p className="text-primary">Sign up - it's free</p>
+          Sign up - it's free
         </Button>
       </Section>
     </main>

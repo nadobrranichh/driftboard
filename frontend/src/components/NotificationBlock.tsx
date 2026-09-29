@@ -23,7 +23,7 @@ export default function Notification({ text }: { text: string }) {
         <Button
           variants={fade({ yStart: -10 })}
           className="w-full px-3 py-1 font-normal"
-          outlined
+          variant="outlined"
           onClick={() => removeNotification(text)}
         >
           Okay
