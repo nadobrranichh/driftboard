@@ -86,3 +86,28 @@ export function updateTaskInCache({
     },
   );
 }
+
+export function deleteTaskInCache({
+  boardId,
+  taskId,
+  columnId,
+}: {
+  boardId: number;
+  taskId: number;
+  columnId: number;
+}) {
+  queryClient.setQueryData(
+    ["boards", boardId],
+    (oldBoard: { board: BoardType } | null) => {
+      if (!oldBoard?.board) return;
+
+      const newColumns = oldBoard.board.columns?.map((col) =>
+        col.id === columnId
+          ? { ...col, tasks: col.tasks?.filter((t) => t.id !== taskId) }
+          : col,
+      );
+
+      return { board: { ...oldBoard.board, columns: newColumns } };
+    },
+  );
+}

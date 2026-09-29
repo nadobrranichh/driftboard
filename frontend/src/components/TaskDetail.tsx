@@ -10,6 +10,7 @@ import { validateEditTaskFields } from "../utils/formFieldValidation";
 import useUpdateTask from "../hooks/useUpdateTask";
 import { motion } from "motion/react";
 import { fade } from "../motion/variants";
+import useDeleteTask from "../hooks/useDeleteTask";
 
 export default function TaskDetail({
   taskId,
@@ -20,6 +21,7 @@ export default function TaskDetail({
 }) {
   const { boardId } = useParams();
   const updateTaskMutation = useUpdateTask(Number(boardId));
+  const deleteTaskMutation = useDeleteTask(Number(boardId));
   const boardQuery = useGetBoard(Number(boardId));
   const board = boardQuery.data ? boardQuery.data.board : null;
   const task =
@@ -38,7 +40,6 @@ export default function TaskDetail({
 
   useEffect(() => {
     setFieldsData(task);
-    console.log(task);
   }, [task]);
 
   const toggleIsEditing = () => setIsEditing((prev) => !prev);
@@ -76,6 +77,12 @@ export default function TaskDetail({
     });
   }
 
+  function handleDeleteTask() {
+    if (!task) return;
+    deleteTaskMutation.mutate({ id: task.id });
+    onClose();
+  }
+
   if (!task || !board || !fieldsData)
     return (
       <Backdrop onClick={onClose}>
@@ -97,7 +104,9 @@ export default function TaskDetail({
         <motion.div variants={fade()} className="flex justify-between mb-2">
           <p className="text-text-muted">Task #{task.id}</p>
           <div className="flex gap-5">
-            <Trash className="cursor-pointer" />
+            <button type="button" onClick={handleDeleteTask}>
+              <Trash className="cursor-pointer" />
+            </button>
             <X className="cursor-pointer" onClick={onClose} />
           </div>
         </motion.div>

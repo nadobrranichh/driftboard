@@ -26,3 +26,12 @@ export async function updateTask({
   if (updatedTask.error) throw updatedTask;
   return updatedTask;
 }
+
+export async function deleteTask({ id }: { id: number }) {
+  const deletedTask = await sendRequest(
+    `/tasks/${id}`,
+    requestInit("DELETE", {}),
+  );
+  if (deletedTask.error) throw deletedTask;
+  return deletedTask;
+}
