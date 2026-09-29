@@ -1,7 +1,7 @@
 import { Plus } from "lucide-react";
 import Board from "../components/Board";
 import NewBoardForm from "../components/NewBoardForm";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getBoards } from "../http/boards";
 import type { BoardType } from "../types";
@@ -9,12 +9,48 @@ import { isSingular } from "../utils/strings";
 import { AnimatePresence, motion } from "framer-motion";
 import { fade } from "../motion/variants";
 import { hoverScale, tapScale } from "../motion/value-presets";
+import { useAuthStore } from "../store/useAuthStore";
+import {
+  addBoardToCache,
+  updateBoardCache,
+  removeBoardFromCache,
+} from "../utils/query-cache/boards";
+import { useNotificationsStore } from "../store/useNotificationsStore";
 
 export default function HomePage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const { socket } = useAuthStore();
+  const { addNotification } = useNotificationsStore();
 
   const boardsQuery = useQuery({ queryKey: ["boards"], queryFn: getBoards });
   const boards = boardsQuery.data ? boardsQuery.data.boards : [];
+
+  useEffect(() => {
+    if (!socket) return;
+    function onRemovedFromBoard({ boardId }: { boardId: number }) {
+      if (!boards.length) return;
+      const board = boards.find((b: BoardType) => b.id === boardId);
+      addNotification(`You just got removed from board: ${board.title}`);
+      removeBoardFromCache({ boardId });
+    }
+    function onAddedToBoard({ board }: { board: BoardType }) {
+      addNotification(`You just got added to board: ${board.title}`);
+      addBoardToCache({ board });
+    }
+    function onBoardUpdated({ board }: { board: BoardType }) {
+      addNotification(`Board info updated for: ${board.title}`);
+      updateBoardCache({ board });
+    }
+    socket.on("removed-from-board", onRemovedFromBoard);
+    socket.on("added-to-board", onAddedToBoard);
+    socket.on("board-updated", onBoardUpdated);
+
+    return () => {
+      socket.off("removed-from-board", onRemovedFromBoard);
+      socket.off("added-to-board", onAddedToBoard);
+      socket.off("board-updated", onBoardUpdated);
+    };
+  }, [socket, boards]);
 
   return (
     <main>

@@ -37,7 +37,11 @@ export default function AddMemberByEmail({
       <div>
         <div className="grid grid-cols-[2fr_1fr] gap-3">
           <InputGroup name="add-member-by-email" ref={addMemberInputRef} />
-          <Button className="py-2 self-end" onClick={handleFindUser}>
+          <Button
+            className="py-2 self-end"
+            onClick={handleFindUser}
+            type="button"
+          >
             Find
           </Button>
           {getUserByEmail.isPending && (
@@ -51,7 +55,11 @@ export default function AddMemberByEmail({
                   {userByEmail.name} ({userByEmail.email})
                 </p>
               </div>
-              <Button className="py-2 self-end" onClick={handleAddUser}>
+              <Button
+                className="py-2 self-end"
+                onClick={handleAddUser}
+                type="button"
+              >
                 Add
               </Button>
             </>

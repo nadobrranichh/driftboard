@@ -1,7 +1,8 @@
-import jwt from "jsonwebtoken";
+import jwt, { type JwtPayload } from "jsonwebtoken";
 import type { NextFunction, Request, Response } from "express";
 import dotenv from "dotenv";
-import prisma from "../config/db.js";
+import cookieParser from "cookie-parser";
+import type { ExtendedError, Socket } from "socket.io";
 dotenv.config();
 
 async function authenticateToken(
@@ -15,14 +16,27 @@ async function authenticateToken(
   jwt.verify(token, process.env.JWT_SECRET!, async (err, decoded) => {
     if (err || !decoded?.id)
       return res.status(401).json({ error: "Invalid token" });
-    const userFromDb = await prisma.user.findUnique({
-      where: { id: decoded.id },
-      select: { id: true, name: true, email: true },
-    });
-    if (!userFromDb) return res.status(404).json({ error: "User not found" });
-    else req.user = userFromDb;
+    req.user = { id: decoded.id };
     next();
   });
 }
 
 export default authenticateToken;
+
+export function authenticateSocketConnection(
+  socket: Socket,
+  next: (err?: ExtendedError | undefined) => void,
+) {
+  cookieParser()(socket.handshake as any, {} as any, () => {
+    try {
+      const token = (socket.handshake as any).cookies?.token;
+      if (!token) return next(new Error("Error: no token found"));
+
+      const payload = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
+      socket.data.user = { id: payload.id };
+      next();
+    } catch (error) {
+      next(new Error("Error: authentication token invalid"));
+    }
+  });
+}

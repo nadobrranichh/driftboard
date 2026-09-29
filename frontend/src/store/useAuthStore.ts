@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { sendRequest } from "../http";
+import type { Socket } from "socket.io-client";
 
 type User = {
   id: number;
@@ -10,7 +11,9 @@ type User = {
 type AuthState = {
   user: User | null;
   status: "unauthenticated" | "loading" | "authenticated";
+  socket: Socket | null;
   setUser: (user: User) => void;
+  setSocket: (socket: Socket | null) => void;
   logout: () => void;
   fetchCurrentUser: () => Promise<void>;
 };
@@ -18,11 +21,16 @@ type AuthState = {
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   status: "loading",
+  socket: null,
   setUser(user: User) {
     set({ user, status: "authenticated" });
   },
+  setSocket(socket: Socket | null) {
+    set({ socket });
+  },
   logout() {
-    set({ user: null, status: "unauthenticated" });
+    if (this.socket) this.socket.disconnect();
+    set({ user: null, status: "unauthenticated", socket: null });
   },
   fetchCurrentUser: async () => {
     set({ status: "loading" });
