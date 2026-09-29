@@ -185,7 +185,8 @@ export async function updateBoard(req: Request, res: Response) {
       .filter((id) => id !== req.user?.id)
       .map((id) => id.toString());
 
-    io.to(membersRooms).emit("board-updated", { board });
+    if (membersRooms.length > 0)
+      io.to(membersRooms).emit("board-updated", { board });
   }
 }
 
@@ -211,10 +212,11 @@ export async function deleteBoard(req: Request, res: Response) {
     const deleted = await prisma.board.delete({ where: { id: boardId } });
     res.json({ message: "Board deleted successfully", boardId });
 
-    io.to(membersRooms).emit("board-deleted", {
-      boardId,
-      boardTitle: deleted.title,
-    });
+    if (membersRooms.length > 0)
+      io.to(membersRooms).emit("board-deleted", {
+        boardId,
+        boardTitle: deleted.title,
+      });
   } catch (error: any) {
     if (error.code === "P2025")
       return res.status(404).json({ error: "Board not found" });
