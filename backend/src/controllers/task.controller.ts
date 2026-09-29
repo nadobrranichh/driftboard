@@ -226,11 +226,19 @@ export async function deleteTask(req: Request, res: Response) {
 
   try {
     await prisma.task.delete({ where: { id: taskId } });
-    return res.json({
+    res.json({
       message: "Task deleted successfully",
       taskId,
       columnId: task.columnId,
     });
+
+    io.to(`board-${task.column.boardId}`)
+      .except(req.user.id.toString())
+      .emit("task-deleted", {
+        taskId,
+        taskTitle: task.title,
+        columnId: task.columnId,
+      });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Failed to delete task" });

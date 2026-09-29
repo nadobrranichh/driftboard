@@ -6,7 +6,11 @@ import {
   removeBoardFromCache,
   updateBoardCache,
 } from "../utils/query-cache/boards";
-import { addTaskInCache, updateTaskInCache } from "../utils/query-cache/tasks";
+import {
+  addTaskInCache,
+  deleteTaskInCache,
+  updateTaskInCache,
+} from "../utils/query-cache/tasks";
 import { handleAddColumn } from "../utils/query-cache/columns";
 import type { BoardType, ColumnType, TaskType } from "../types";
 
@@ -14,6 +18,12 @@ type TaskUpdatedPayload = {
   task: TaskType;
   tasks?: TaskType[];
   oldColumnId: number;
+};
+
+type TaskDeletedPayload = {
+  taskId: number;
+  taskTitle: string;
+  columnId: number;
 };
 
 export default function useBoardEvents(boardId: number, boardTitle?: string) {
@@ -46,18 +56,28 @@ export default function useBoardEvents(boardId: number, boardTitle?: string) {
       addNotification(`Task updated: ${task.title}`);
       updateTaskInCache({ task, tasks, oldColumnId, boardId });
     }
+    function onTaskDeleted({
+      taskId,
+      columnId,
+      taskTitle,
+    }: TaskDeletedPayload) {
+      addNotification(`Task #${taskId} (${taskTitle}) was deleted`);
+      deleteTaskInCache({ boardId, taskId, columnId });
+    }
 
     socket.on("board-updated", onBoardUpdated);
     socket.on("removed-from-board", onRemovedFromBoard);
     socket.on("column-added", onColumnAdded);
     socket.on("task-added", onTaskAdded);
     socket.on("task-updated", onTaskUpdated);
+    socket.on("task-deleted", onTaskDeleted);
     return () => {
       socket.off("board-updated", onBoardUpdated);
       socket.off("removed-from-board", onRemovedFromBoard);
       socket.off("column-added", onColumnAdded);
       socket.off("task-added", onTaskAdded);
       socket.off("task-updated", onTaskUpdated);
+      socket.off("task-deleted", onTaskDeleted);
     };
   }, [socket, boardId, boardTitle]);
 }

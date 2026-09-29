@@ -11,6 +11,7 @@ import useUpdateTask from "../hooks/useUpdateTask";
 import { motion } from "motion/react";
 import { fade } from "../motion/variants";
 import useDeleteTask from "../hooks/useDeleteTask";
+import { useAuthStore } from "../store/useAuthStore";
 
 export default function TaskDetail({
   taskId,
@@ -19,6 +20,7 @@ export default function TaskDetail({
   taskId: number;
   onClose: () => void;
 }) {
+  const { socket } = useAuthStore();
   const { boardId } = useParams();
   const updateTaskMutation = useUpdateTask(Number(boardId));
   const deleteTaskMutation = useDeleteTask(Number(boardId));
@@ -41,6 +43,20 @@ export default function TaskDetail({
   useEffect(() => {
     setFieldsData(task);
   }, [task]);
+
+  useEffect(() => {
+    if (!socket || !task) return;
+
+    function onTaskDeleted(data: any) {
+      if (data.taskId === task.id) onClose();
+    }
+
+    socket.on("task-deleted", onTaskDeleted);
+
+    return () => {
+      socket.off("task-deleted", onTaskDeleted);
+    };
+  }, [socket, task]);
 
   const toggleIsEditing = () => setIsEditing((prev) => !prev);
 
