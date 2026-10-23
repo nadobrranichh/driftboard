@@ -2,11 +2,11 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import type { ColumnType, TaskType } from "../types";
+import type { ColumnType, TaskType } from "../../types";
 import Task from "./Task";
 import { useDroppable } from "@dnd-kit/core";
 import { motion } from "framer-motion";
-import { fade } from "../motion/variants";
+import { fade } from "../../motion/variants";
 
 export default function Column({
   data,

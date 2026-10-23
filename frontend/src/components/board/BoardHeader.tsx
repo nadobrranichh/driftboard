@@ -1,6 +1,6 @@
 import { ArrowLeft, Settings } from "lucide-react";
-import { boardColorRamps, boardIcons } from "../lists/boardIconsList";
-import type { BoardType } from "../types";
+import { boardColorRamps, boardIcons } from "../../lists/boardIconsList";
+import type { BoardType } from "../../types";
 
 export default function BoardHeader({
   onNavigateHome,

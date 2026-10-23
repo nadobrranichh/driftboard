@@ -1,9 +1,9 @@
-import { fade } from "../motion/variants";
-import Backdrop from "./ui/Backdrop";
+import { fade } from "../../../motion/variants";
+import Backdrop from "../../ui/Backdrop";
 import { motion } from "framer-motion";
-import Button from "./ui/Button";
+import Button from "../../ui/Button";
 import { useParams } from "react-router";
-import useDeleteBoard from "../hooks/useDeleteBoard";
+import useDeleteBoard from "../../../hooks/useDeleteBoard";
 
 export default function BoardDeleteForm({
   boardTitle,

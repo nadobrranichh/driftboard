@@ -1,9 +1,9 @@
 import { Check, X } from "lucide-react";
 import { useRef, useState, type MouseEvent } from "react";
-import useCreateColumn from "../hooks/useCreateColumn";
+import useCreateColumn from "../../hooks/useCreateColumn";
 import { useParams } from "react-router";
 import { motion } from "framer-motion";
-import { fade } from "../motion/variants";
+import { fade } from "../../motion/variants";
 
 export default function NewColumn() {
   const { boardId } = useParams();

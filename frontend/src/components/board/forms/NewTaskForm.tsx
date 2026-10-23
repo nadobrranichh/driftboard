@@ -1,13 +1,13 @@
 import { useState, type SubmitEvent } from "react";
-import Backdrop from "./ui/Backdrop";
-import InputGroup from "./ui/InputGroup";
-import Button from "./ui/Button";
-import { validateNewTaskFields } from "../utils/formFieldValidation";
-import useCreateTask from "../hooks/useCreateTask";
+import Backdrop from "../../ui/Backdrop";
+import InputGroup from "../../ui/InputGroup";
+import Button from "../../ui/Button";
+import { validateNewTaskFields } from "../../../utils/formFieldValidation";
+import useCreateTask from "../../../hooks/useCreateTask";
 import { useParams } from "react-router";
 import { X } from "lucide-react";
 import { motion } from "framer-motion";
-import { fade } from "../motion/variants";
+import { fade } from "../../../motion/variants";
 
 export default function NewTaskForm({
   columnId,

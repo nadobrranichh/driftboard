@@ -1,6 +1,6 @@
-import type { TaskType } from "../types";
+import type { TaskType } from "../../types";
 import { Circle } from "lucide-react";
-import { formatDate } from "../utils/strings";
+import { formatDate } from "../../utils/strings";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 

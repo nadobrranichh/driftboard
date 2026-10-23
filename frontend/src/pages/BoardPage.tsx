@@ -1,12 +1,12 @@
 import { useState } from "react";
-import NewTaskForm from "../components/NewTaskForm";
+import NewTaskForm from "../components/board/forms/NewTaskForm";
 import { useLocation, useNavigate, useParams } from "react-router";
 import type { BoardType, ColumnType, OpenForm } from "../types";
-import ColumnPill from "../components/ColumnPill";
+import ColumnPill from "../components/board/ColumnPill";
 import useGetBoard from "../hooks/useGetBoard";
 import useBreakpoints from "../hooks/useBreakpoints";
-import Column from "../components/Column";
-import NewColumn from "../components/NewColumn";
+import Column from "../components/board/Column";
+import NewColumn from "../components/board/NewColumn";
 import {
   closestCorners,
   DndContext,
@@ -15,12 +15,12 @@ import {
 import { getColumn } from "../utils/tasks";
 import { AnimatePresence, motion } from "framer-motion";
 import { fade } from "../motion/variants";
-import BoardSettings from "../components/BoardSettings";
-import TaskDetail from "../components/TaskDetail";
+import BoardSettings from "../components/board/forms/BoardSettings";
+import TaskDetail from "../components/board/forms/TaskDetail";
 import { useAuthStore } from "../store/useAuthStore";
 import useBoardEvents from "../hooks/useBoardEvents";
 import useBoardDnd from "../hooks/useBoardDnd";
-import BoardHeader from "../components/BoardHeader";
+import BoardHeader from "../components/board/BoardHeader";
 
 export default function BoardPage() {
   const { socket } = useAuthStore();

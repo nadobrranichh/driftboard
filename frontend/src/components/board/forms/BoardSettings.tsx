@@ -1,18 +1,18 @@
 import { useEffect, useState, type SyntheticEvent } from "react";
-import useGetBoard from "../hooks/useGetBoard";
-import Backdrop from "./ui/Backdrop";
+import useGetBoard from "../../../hooks/useGetBoard";
+import Backdrop from "../../ui/Backdrop";
 import { useParams } from "react-router";
-import InputGroup from "./ui/InputGroup";
-import type { BoardType, User } from "../types";
+import InputGroup from "../../ui/InputGroup";
+import type { BoardType, User } from "../../../types";
 import { X } from "lucide-react";
-import Button from "./ui/Button";
-import { useAuthStore } from "../store/useAuthStore";
-import { arraysAreEqual } from "../utils/arrays";
-import useUpdateBoard from "../hooks/useUpdateBoard";
-import IconAndColorPicker from "./IconAndColorPicker";
+import Button from "../../ui/Button";
+import { useAuthStore } from "../../../store/useAuthStore";
+import { arraysAreEqual } from "../../../utils/arrays";
+import useUpdateBoard from "../../../hooks/useUpdateBoard";
+import IconAndColorPicker from "../../IconAndColorPicker";
 import AddMemberByEmail from "./AddMemberByEmail";
 import { AnimatePresence, motion } from "framer-motion";
-import { fade } from "../motion/variants";
+import { fade } from "../../../motion/variants";
 import BoardDeleteForm from "./BoardDeleteForm";
 
 export default function BoardSettings({ onClose }: { onClose: () => void }) {

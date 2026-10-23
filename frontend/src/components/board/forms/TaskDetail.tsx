@@ -1,17 +1,17 @@
 import { Trash, X } from "lucide-react";
-import Button from "./ui/Button";
-import Backdrop from "./ui/Backdrop";
+import Button from "../../ui/Button";
+import Backdrop from "../../ui/Backdrop";
 import { useParams } from "react-router";
-import { formatDate } from "../utils/strings";
+import { formatDate } from "../../../utils/strings";
 import { useEffect, useState, type SyntheticEvent } from "react";
-import type { ColumnType, TaskType, User } from "../types";
-import useGetBoard from "../hooks/useGetBoard";
-import { validateEditTaskFields } from "../utils/formFieldValidation";
-import useUpdateTask from "../hooks/useUpdateTask";
+import type { ColumnType, TaskType, User } from "../../../types";
+import useGetBoard from "../../../hooks/useGetBoard";
+import { validateEditTaskFields } from "../../../utils/formFieldValidation";
+import useUpdateTask from "../../../hooks/useUpdateTask";
 import { motion } from "motion/react";
-import { fade } from "../motion/variants";
-import useDeleteTask from "../hooks/useDeleteTask";
-import { useAuthStore } from "../store/useAuthStore";
+import { fade } from "../../../motion/variants";
+import useDeleteTask from "../../../hooks/useDeleteTask";
+import { useAuthStore } from "../../../store/useAuthStore";
 
 export default function TaskDetail({
   taskId,
