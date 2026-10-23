@@ -1,3 +1,4 @@
+import { Link } from "react-router";
 import GitHubIcon from "../assets/github-svgrepo-com.svg";
 import LinkedInIcon from "../assets/linkedin-svgrepo-com.svg";
 
@@ -8,8 +9,16 @@ export default function Footer() {
         &copy; {new Date().getFullYear()} DriftBoard
       </p>
       <div className="flex gap-4">
-        <img className="h-6" src={GitHubIcon} />
-        <img className="h-6" src={LinkedInIcon} />
+        <Link to="https://github.com/nadobrranichh" target="_blank">
+          <img className="h-6" src={GitHubIcon} />
+        </Link>
+
+        <Link
+          to="https://www.linkedin.com/in/nazar-shchepaniak-14906635a/"
+          target="_blank"
+        >
+          <img className="h-6" src={LinkedInIcon} />
+        </Link>
       </div>
     </footer>
   );

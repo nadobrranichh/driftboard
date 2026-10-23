@@ -51,9 +51,8 @@ export default function AddMemberByEmail({
             <>
               <div>
                 <p>Found user:</p>
-                <p>
-                  {userByEmail.name} ({userByEmail.email})
-                </p>
+                <p>{userByEmail.name}</p>
+                <p>({userByEmail.email})</p>
               </div>
               <Button
                 className="py-2 self-end"
