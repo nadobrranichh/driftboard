@@ -2,7 +2,7 @@ import type { Active, Over } from "@dnd-kit/core";
 import { findColumnId, findFirstTask } from "../utils/tasks";
 import { queryClient } from ".";
 import type { BoardType } from "../types";
-import type useUpdateTask from "../hooks/useUpdateTask";
+import type useUpdateTask from "../hooks/board/http/useUpdateTask";
 
 const MIN_POSITION_DIFFERENCE = 2;
 const POSITION_DIFFERENCE = Math.pow(2, 15);

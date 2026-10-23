@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { getBoard } from "../http/boards";
-import type { BoardType } from "../types";
+import { getBoard } from "../../../http/boards";
+import type { BoardType } from "../../../types";
 
 export default function useGetBoard(
   boardId: number,

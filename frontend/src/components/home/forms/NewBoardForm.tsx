@@ -4,7 +4,7 @@ import NewBoardColumnItem from "./NewBoardColumnItem";
 import Backdrop from "../../ui/Backdrop";
 import { useState, type SyntheticEvent } from "react";
 import Button from "../../ui/Button";
-import useCreateBoard from "../../../hooks/useCreateBoard";
+import useCreateBoard from "../../../hooks/home/useCreateBoard";
 import IconAndColorPicker from "../../shared/IconAndColorPicker";
 import { motion } from "motion/react";
 import { fade } from "../../../motion/variants";

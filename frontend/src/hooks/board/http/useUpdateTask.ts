@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
-import { updateTask } from "../http/tasks";
-import type { TaskType } from "../types";
-import { updateTaskInCache } from "../utils/query-cache/tasks";
+import { updateTask } from "../../../http/tasks";
+import type { TaskType } from "../../../types";
+import { updateTaskInCache } from "../../../utils/query-cache/tasks";
 
 export default function useUpdateTask(boardId: number) {
   return useMutation({

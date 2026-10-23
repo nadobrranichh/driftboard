@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
-import { signup } from "../http/auth";
-import { useAuthStore } from "../store/useAuthStore";
+import { signup } from "../../http/auth";
+import { useAuthStore } from "../../store/useAuthStore";
 
 export default function useSignup() {
   const navigate = useNavigate();

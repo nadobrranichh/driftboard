@@ -1,19 +1,19 @@
 import { useNavigate } from "react-router";
-import { useAuthStore } from "../store/useAuthStore";
-import { useNotificationsStore } from "../store/useNotificationsStore";
+import { useAuthStore } from "../../store/useAuthStore";
+import { useNotificationsStore } from "../../store/useNotificationsStore";
 import { useEffect } from "react";
 import {
   deleteBoardFromCache,
   removeBoardFromCache,
   updateBoardCache,
-} from "../utils/query-cache/boards";
+} from "../../utils/query-cache/boards";
 import {
   addTaskInCache,
   deleteTaskInCache,
   updateTaskInCache,
-} from "../utils/query-cache/tasks";
-import { handleAddColumn } from "../utils/query-cache/columns";
-import type { BoardType, ColumnType, TaskType } from "../types";
+} from "../../utils/query-cache/tasks";
+import { handleAddColumn } from "../../utils/query-cache/columns";
+import type { BoardType, ColumnType, TaskType } from "../../types";
 
 type TaskUpdatedPayload = {
   task: TaskType;

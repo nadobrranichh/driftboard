@@ -5,12 +5,12 @@ import { useParams } from "react-router";
 import { formatDate } from "../../../utils/strings";
 import { useEffect, useState, type SyntheticEvent } from "react";
 import type { ColumnType, TaskType, User } from "../../../types";
-import useGetBoard from "../../../hooks/useGetBoard";
+import useGetBoard from "../../../hooks/board/http/useGetBoard";
 import { validateEditTaskFields } from "../../../utils/formFieldValidation";
-import useUpdateTask from "../../../hooks/useUpdateTask";
+import useUpdateTask from "../../../hooks/board/http/useUpdateTask";
 import { motion } from "motion/react";
 import { fade } from "../../../motion/variants";
-import useDeleteTask from "../../../hooks/useDeleteTask";
+import useDeleteTask from "../../../hooks/board/http/useDeleteTask";
 import { useAuthStore } from "../../../store/useAuthStore";
 
 export default function TaskDetail({

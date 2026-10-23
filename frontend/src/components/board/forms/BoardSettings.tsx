@@ -1,5 +1,5 @@
 import { useEffect, useState, type SyntheticEvent } from "react";
-import useGetBoard from "../../../hooks/useGetBoard";
+import useGetBoard from "../../../hooks/board/http/useGetBoard";
 import Backdrop from "../../ui/Backdrop";
 import { useParams } from "react-router";
 import InputGroup from "../../ui/InputGroup";
@@ -8,7 +8,7 @@ import { X } from "lucide-react";
 import Button from "../../ui/Button";
 import { useAuthStore } from "../../../store/useAuthStore";
 import { arraysAreEqual } from "../../../utils/arrays";
-import useUpdateBoard from "../../../hooks/useUpdateBoard";
+import useUpdateBoard from "../../../hooks/board/http/useUpdateBoard";
 import IconAndColorPicker from "../../shared/IconAndColorPicker";
 import AddMemberByEmail from "./AddMemberByEmail";
 import { AnimatePresence, motion } from "framer-motion";

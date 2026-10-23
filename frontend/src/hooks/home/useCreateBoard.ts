@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
-import { createBoard } from "../http/boards";
-import { addBoardToCache } from "../utils/query-cache/boards";
+import { createBoard } from "../../http/boards";
+import { addBoardToCache } from "../../utils/query-cache/boards";
 
 export default function useCreateBoard() {
   return useMutation({

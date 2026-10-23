@@ -2,8 +2,8 @@ import { useSearchParams } from "react-router";
 import LoginForm from "../components/auth/LoginForm";
 import SignupForm from "../components/auth/SignupForm";
 import { useEffect, useState, type SyntheticEvent } from "react";
-import useLogin from "../hooks/useLogin";
-import useSignup from "../hooks/useSignup";
+import useLogin from "../hooks/auth/useLogin";
+import useSignup from "../hooks/auth/useSignup";
 import { validateAuthFields } from "../utils/formFieldValidation";
 
 export default function AuthPage() {

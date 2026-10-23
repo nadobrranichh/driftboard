@@ -8,10 +8,13 @@ import {
   type DragStartEvent,
 } from "@dnd-kit/core";
 import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
-import { findColumnId } from "../utils/tasks";
-import { moveTaskInCache, syncTaskPosition } from "../http/boardCacheUpdates";
-import type { BoardType, TaskType } from "../types";
-import useUpdateTask from "./useUpdateTask";
+import { findColumnId } from "../../utils/tasks";
+import {
+  moveTaskInCache,
+  syncTaskPosition,
+} from "../../http/boardCacheUpdates";
+import type { BoardType, TaskType } from "../../types";
+import useUpdateTask from "./http/useUpdateTask";
 import { useRef } from "react";
 
 export default function useBoardDnd(board: BoardType | null) {

@@ -3,7 +3,7 @@ import Backdrop from "../../ui/Backdrop";
 import InputGroup from "../../ui/InputGroup";
 import Button from "../../ui/Button";
 import { validateNewTaskFields } from "../../../utils/formFieldValidation";
-import useCreateTask from "../../../hooks/useCreateTask";
+import useCreateTask from "../../../hooks/board/http/useCreateTask";
 import { useParams } from "react-router";
 import { X } from "lucide-react";
 import { motion } from "framer-motion";
