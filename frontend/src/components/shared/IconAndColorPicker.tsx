@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { boardColorRamps, boardIcons } from "../lists/boardIconsList";
+import { boardColorRamps, boardIcons } from "../../lists/boardIconsList";
 import { motion } from "framer-motion";
-import { fade } from "../motion/variants";
-import { hoverScale, tapScale } from "../motion/value-presets";
+import { fade } from "../../motion/variants";
+import { hoverScale, tapScale } from "../../motion/value-presets";
 
 export default function IconAndColorPicker({
   icon,

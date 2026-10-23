@@ -9,7 +9,7 @@ import Button from "../../ui/Button";
 import { useAuthStore } from "../../../store/useAuthStore";
 import { arraysAreEqual } from "../../../utils/arrays";
 import useUpdateBoard from "../../../hooks/useUpdateBoard";
-import IconAndColorPicker from "../../IconAndColorPicker";
+import IconAndColorPicker from "../../shared/IconAndColorPicker";
 import AddMemberByEmail from "./AddMemberByEmail";
 import { AnimatePresence, motion } from "framer-motion";
 import { fade } from "../../../motion/variants";
