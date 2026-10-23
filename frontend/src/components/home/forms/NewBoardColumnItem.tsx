@@ -1,7 +1,7 @@
 import { Check, Pencil, X } from "lucide-react";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { fade } from "../motion/variants";
+import { fade } from "../../../motion/variants";
 
 export default function NewBoardColumnItem({
   name,

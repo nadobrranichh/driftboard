@@ -1,14 +1,14 @@
 import { ChevronRight } from "lucide-react";
-import type { BoardType, TaskType } from "../types";
-import { boardColorRamps, boardIcons } from "../lists/boardIconsList";
-import { isSingular } from "../utils/strings";
+import type { BoardType, TaskType } from "../../types";
+import { boardColorRamps, boardIcons } from "../../lists/boardIconsList";
+import { isSingular } from "../../utils/strings";
 import { useNavigate } from "react-router";
 import { motion } from "framer-motion";
-import { fade } from "../motion/variants";
-import { hoverScale, tapScale } from "../motion/value-presets";
-import { useAuthStore } from "../store/useAuthStore";
+import { fade } from "../../motion/variants";
+import { hoverScale, tapScale } from "../../motion/value-presets";
+import { useAuthStore } from "../../store/useAuthStore";
 import { useEffect } from "react";
-import { addTaskInCache } from "../utils/query-cache/tasks";
+import { addTaskInCache } from "../../utils/query-cache/tasks";
 
 export default function Board({ data }: { data: BoardType }) {
   const { socket } = useAuthStore();

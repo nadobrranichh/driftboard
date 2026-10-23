@@ -1,13 +1,13 @@
 import { Plus, X } from "lucide-react";
-import InputGroup from "./ui/InputGroup";
+import InputGroup from "../../ui/InputGroup";
 import NewBoardColumnItem from "./NewBoardColumnItem";
-import Backdrop from "./ui/Backdrop";
+import Backdrop from "../../ui/Backdrop";
 import { useState, type SyntheticEvent } from "react";
-import Button from "./ui/Button";
-import useCreateBoard from "../hooks/useCreateBoard";
-import IconAndColorPicker from "./IconAndColorPicker";
+import Button from "../../ui/Button";
+import useCreateBoard from "../../../hooks/useCreateBoard";
+import IconAndColorPicker from "../../IconAndColorPicker";
 import { motion } from "motion/react";
-import { fade } from "../motion/variants";
+import { fade } from "../../../motion/variants";
 
 const MAX_COLUMNS = 5;
 

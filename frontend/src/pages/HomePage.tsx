@@ -1,6 +1,6 @@
 import { Plus } from "lucide-react";
-import Board from "../components/Board";
-import NewBoardForm from "../components/NewBoardForm";
+import Board from "../components/home/Board";
+import NewBoardForm from "../components/home/forms/NewBoardForm";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getBoards } from "../http/boards";
