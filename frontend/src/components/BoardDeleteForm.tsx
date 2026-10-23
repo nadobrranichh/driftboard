@@ -1,7 +1,7 @@
 import { fade } from "../motion/variants";
-import Backdrop from "./Backdrop";
+import Backdrop from "./ui/Backdrop";
 import { motion } from "framer-motion";
-import Button from "./Button";
+import Button from "./ui/Button";
 import { useParams } from "react-router";
 import useDeleteBoard from "../hooks/useDeleteBoard";
 

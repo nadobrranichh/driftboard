@@ -1,11 +1,11 @@
 import { useEffect, useState, type SyntheticEvent } from "react";
 import useGetBoard from "../hooks/useGetBoard";
-import Backdrop from "./Backdrop";
+import Backdrop from "./ui/Backdrop";
 import { useParams } from "react-router";
-import InputGroup from "./InputGroup";
+import InputGroup from "./ui/InputGroup";
 import type { BoardType, User } from "../types";
 import { X } from "lucide-react";
-import Button from "./Button";
+import Button from "./ui/Button";
 import { useAuthStore } from "../store/useAuthStore";
 import { arraysAreEqual } from "../utils/arrays";
 import useUpdateBoard from "../hooks/useUpdateBoard";

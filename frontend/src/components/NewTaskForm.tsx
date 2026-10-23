@@ -1,7 +1,7 @@
 import { useState, type SubmitEvent } from "react";
-import Backdrop from "./Backdrop";
-import InputGroup from "./InputGroup";
-import Button from "./Button";
+import Backdrop from "./ui/Backdrop";
+import InputGroup from "./ui/InputGroup";
+import Button from "./ui/Button";
 import { validateNewTaskFields } from "../utils/formFieldValidation";
 import useCreateTask from "../hooks/useCreateTask";
 import { useParams } from "react-router";

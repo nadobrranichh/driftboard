@@ -1,7 +1,7 @@
 import { type ReactNode } from "react";
 import { motion, type HTMLMotionProps } from "framer-motion";
-import { fade } from "../motion/variants";
-import { hoverScale, tapScale } from "../motion/value-presets";
+import { fade } from "../../motion/variants";
+import { hoverScale, tapScale } from "../../motion/value-presets";
 
 interface ButtonProps extends HTMLMotionProps<"button"> {
   variant?: "filled" | "outlined" | "danger";

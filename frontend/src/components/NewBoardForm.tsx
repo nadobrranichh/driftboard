@@ -1,9 +1,9 @@
 import { Plus, X } from "lucide-react";
-import InputGroup from "./InputGroup";
+import InputGroup from "./ui/InputGroup";
 import NewBoardColumnItem from "./NewBoardColumnItem";
-import Backdrop from "./Backdrop";
+import Backdrop from "./ui/Backdrop";
 import { useState, type SyntheticEvent } from "react";
-import Button from "./Button";
+import Button from "./ui/Button";
 import useCreateBoard from "../hooks/useCreateBoard";
 import IconAndColorPicker from "./IconAndColorPicker";
 import { motion } from "motion/react";

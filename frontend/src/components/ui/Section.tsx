@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { motion } from "framer-motion";
-import { fade } from "../motion/variants";
+import { fade } from "../../motion/variants";
 
 export default function Section({
   children,

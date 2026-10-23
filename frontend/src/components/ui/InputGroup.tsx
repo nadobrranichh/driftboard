@@ -1,6 +1,6 @@
 import type { InputHTMLAttributes, RefObject } from "react";
 import { motion } from "framer-motion";
-import { fade } from "../motion/variants";
+import { fade } from "../../motion/variants";
 
 const textSizeClasses = {
   sm: "text-sm",

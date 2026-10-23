@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
-import InputGroup from "./InputGroup";
-import Button from "./Button";
+import InputGroup from "./ui/InputGroup";
+import Button from "./ui/Button";
 import useUserByEmail from "../hooks/useUserByEmail";
 import { isValidEmail } from "../utils/formFieldValidation";
 import type { User } from "../types";

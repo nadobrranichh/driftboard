@@ -1,7 +1,7 @@
 import { Link } from "react-router";
-import InputGroup from "../InputGroup";
+import InputGroup from "../ui/InputGroup";
 import AuthLayout from "./AuthLayout";
-import Button from "../Button";
+import Button from "../ui/Button";
 import type { SyntheticEvent } from "react";
 
 export default function SignupForm({

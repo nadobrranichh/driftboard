@@ -1,10 +1,10 @@
 import { Outlet } from "react-router";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
+import Header from "../components/ui/Header";
+import Footer from "../components/ui/Footer";
 import { useEffect } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import { useNotificationsStore } from "../store/useNotificationsStore";
-import NotificationBlock from "../components/NotificationBlock";
+import NotificationBlock from "../components/ui/NotificationBlock";
 import { AnimatePresence } from "motion/react";
 
 export default function RootLayout() {

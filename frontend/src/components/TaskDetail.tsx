@@ -1,6 +1,6 @@
 import { Trash, X } from "lucide-react";
-import Button from "./Button";
-import Backdrop from "./Backdrop";
+import Button from "./ui/Button";
+import Backdrop from "./ui/Backdrop";
 import { useParams } from "react-router";
 import { formatDate } from "../utils/strings";
 import { useEffect, useState, type SyntheticEvent } from "react";

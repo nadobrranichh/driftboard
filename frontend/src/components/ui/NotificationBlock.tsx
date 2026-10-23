@@ -1,8 +1,8 @@
 import { Bell } from "lucide-react";
 import Button from "./Button";
-import { useNotificationsStore } from "../store/useNotificationsStore";
+import { useNotificationsStore } from "../../store/useNotificationsStore";
 import { motion } from "framer-motion";
-import { fade } from "../motion/variants";
+import { fade } from "../../motion/variants";
 
 export default function Notification({ text }: { text: string }) {
   const { removeNotification } = useNotificationsStore();

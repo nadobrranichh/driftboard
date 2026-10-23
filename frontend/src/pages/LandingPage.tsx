@@ -1,6 +1,6 @@
 import features from "../lists/featuresList";
-import Button from "../components/Button";
-import Section from "../components/Section";
+import Button from "../components/ui/Button";
+import Section from "../components/ui/Section";
 import { boardColorRamps } from "../lists/boardIconsList";
 import { useNavigate } from "react-router";
 import { motion } from "framer-motion";
