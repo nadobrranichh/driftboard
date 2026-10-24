@@ -3,6 +3,7 @@ import InputGroup from "../ui/InputGroup";
 import AuthLayout from "./AuthLayout";
 import Button from "../ui/Button";
 import type { SyntheticEvent } from "react";
+import PasswordInputGroup from "../ui/PasswordInputGroup";
 
 export default function SignupForm({
   onSubmit,
@@ -16,8 +17,8 @@ export default function SignupForm({
       <div className="flex flex-col gap-2">
         <InputGroup name="name" />
         <InputGroup type="email" name="email" />
-        <InputGroup name="password" />
-        <InputGroup name="repeat-password" />
+        <PasswordInputGroup name="password" />
+        <PasswordInputGroup name="repeat-password" />
       </div>
 
       {errors.length > 0 && (

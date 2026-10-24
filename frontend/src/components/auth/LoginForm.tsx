@@ -3,6 +3,7 @@ import InputGroup from "../ui/InputGroup";
 import AuthLayout from "./AuthLayout";
 import Button from "../ui/Button";
 import type { SyntheticEvent } from "react";
+import PasswordInputGroup from "../ui/PasswordInputGroup";
 
 export default function LoginForm({
   onSubmit,
@@ -16,7 +17,7 @@ export default function LoginForm({
       <div className="flex flex-col gap-2">
         <InputGroup type="email" name="email" />
         <div>
-          <InputGroup name="password" />
+          <PasswordInputGroup name="password" />
           <Link
             to="/forgot-password"
             className="text-primary text-end w-full block text-sm"

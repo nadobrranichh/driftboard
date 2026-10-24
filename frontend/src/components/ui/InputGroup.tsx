@@ -1,4 +1,8 @@
-import type { InputHTMLAttributes, RefObject } from "react";
+import {
+  type InputHTMLAttributes,
+  type ReactNode,
+  type RefObject,
+} from "react";
 import { motion } from "framer-motion";
 import { fade } from "../../motion/variants";
 
@@ -24,11 +28,12 @@ function getDates() {
   };
 }
 
-type InputGroupProps = {
+export type InputGroupProps = {
   name: string;
   type?: string;
   textSize?: keyof typeof textSizeClasses;
   textarea?: boolean;
+  labelAction?: ReactNode;
   ref?: RefObject<HTMLInputElement | HTMLTextAreaElement | null>;
 } & InputHTMLAttributes<HTMLInputElement> &
   InputHTMLAttributes<HTMLTextAreaElement>;
@@ -38,14 +43,18 @@ export default function InputGroup({
   type = "text",
   textSize = "sm",
   textarea = false,
+  labelAction,
   ref,
   ...props
 }: InputGroupProps) {
   return (
     <motion.div variants={fade()}>
-      <label htmlFor={name} className={textSizeClasses[textSize]}>
-        {createLabelText(name)}
-      </label>
+      <div className="flex justify-between">
+        <label htmlFor={name} className={textSizeClasses[textSize]}>
+          {createLabelText(name)}
+        </label>
+        {labelAction}
+      </div>
       {textarea ? (
         <textarea
           name={name}
