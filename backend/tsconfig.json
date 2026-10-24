@@ -44,5 +44,7 @@
 
     "rootDir": "./src",
     "outDir": "./dist"
-  }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "prisma.config.ts", "prisma7.config.ts"]
 }
