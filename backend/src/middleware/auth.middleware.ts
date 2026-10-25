@@ -13,7 +13,7 @@ async function authenticateToken(
   const token = req.cookies?.token || null;
   if (!token) return res.status(401).json({ error: "No token found" });
 
-  jwt.verify(token, process.env.JWT_SECRET!, async (err, decoded) => {
+  jwt.verify(token, process.env.JWT_SECRET!, async (err: any, decoded: any) => {
     if (err || !decoded?.id)
       return res.status(401).json({ error: "Invalid token" });
     req.user = { id: decoded.id };
