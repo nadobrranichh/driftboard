@@ -8,10 +8,13 @@ dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 const COOKIE_MAX_AGE = 24 * 60 * 60 * 1000; // 1 day
+const isProd = process.env.NODE_ENV === "production";
 
 function setAuthCookie(res: Response, token: String) {
   res.cookie("token", token, {
     httpOnly: true,
+    secure: isProd,
+    sameSite: isProd ? "none" : "lax",
     maxAge: COOKIE_MAX_AGE,
   });
 }
