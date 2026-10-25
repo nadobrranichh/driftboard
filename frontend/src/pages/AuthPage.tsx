@@ -40,9 +40,9 @@ export default function AuthPage() {
       {showFetchError && (
         <div className="absolute top-1/2 left-1/2 -translate-1/2 shadow-xl p-5 bg-surface rounded-xl border border-danger text-center">
           <h2 className="text-danger font-bold text-xl">Error!</h2>
-          {login.error?.error}
+          {login.error?.message}
 
-          {signup.error?.error}
+          {signup.error?.message}
         </div>
       )}
       {mode === "login" && (

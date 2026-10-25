@@ -49,7 +49,6 @@ export default function HomePage() {
       boardId: number;
       boardTitle: string;
     }) {
-      console.log("BOARD DELETED EVENT!", boardId, boardTitle);
       addNotification(`Board '${boardTitle}' was deleted`);
       deleteBoardFromCache({ boardId });
     }

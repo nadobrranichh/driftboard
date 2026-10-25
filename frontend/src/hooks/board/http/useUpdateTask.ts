@@ -15,7 +15,10 @@ export default function useUpdateTask(boardId: number) {
       newFields: Partial<TaskType>;
       oldColumnId?: number;
       rebalance?: boolean;
-    }) => updateTask({ id, newFields, rebalance }),
+    }) => {
+      void oldColumnId;
+      return updateTask({ id, newFields, rebalance });
+    },
     onSuccess: (data, variables) => {
       const { task, tasks } = data;
       updateTaskInCache({
